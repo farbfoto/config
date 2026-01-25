@@ -1,0 +1,775 @@
+test:
+  alias: Test
+  sequence:
+  - type: turn_off
+    device_id: fc835c0dbec94d7749be9186fc10937b
+    entity_id: switch.3d_drucker
+    domain: switch
+  mode: single
+learn_tv_power:
+  sequence:
+  - data:
+      device: amp_wohnzimmer
+      command: power
+      command_type: ir
+    action: remote.learn_command
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+play_brain_food:
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Brain Food
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - action: media_player.media_next_track
+    data: {}
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  alias: Play Concentration Music
+  icon: mdi:music
+play_concentration_jazz:
+  alias: Play Concentration Jazz
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Jazz in Focus
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - action: media_player.media_next_track
+    data: {}
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+play_concentration_in_the_loop:
+  alias: Play Concentration In the loop
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/In the Loop
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - action: media_player.media_next_track
+    data: {}
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+play_80s:
+  alias: Play Chill Playlist
+  sequence:
+  - target:
+      entity_id: media_player.nad_c700_nad_bluesound
+    data:
+      media_content_id: tidal://playlist/b54f6cf2-96f7-4eaf-8c4c-15ad38d365f9
+      media_content_type: music
+    action: media_player.play_media
+  mode: single
+play_slow_roast:
+  alias: Play Slow Roast
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Slow Roast
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - action: media_player.media_next_track
+    data: {}
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+play_finest_fusion:
+  alias: Play Finest Fusion
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Finest Fusion
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data: {}
+    action: media_player.media_next_track
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+play_myjazz:
+  alias: Play MyJazz
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Own Jazz
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data: {}
+    action: media_player.media_next_track
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+play_autopilot:
+  alias: Play AutoPilot
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: Playlists/Autopilot
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data: {}
+    action: media_player.media_next_track
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+homeoffice_transit_evening_light:
+  alias: 'Homeoffice: Transit Evening Light'
+  sequence:
+  - repeat:
+      count: '10'
+      sequence:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.arbeiten_spat
+        data:
+          transition: 30
+      - service: scene.turn_on
+        data:
+          transition: 30
+        target:
+          entity_id: scene.homeoffice_light_nachtarbeit
+  mode: single
+homeoffice_meditation:
+  alias: Homeoffice Meditation an
+  sequence:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.mediatation_schalter
+  mode: single
+ankleide_bad_switch_scenes:
+  alias: Ankleide Bad Switch Scenes
+  sequence:
+  - service: input_select.select_next
+    data:
+      cycle: true
+    target:
+      entity_id: input_select.ankleide_bad_scenen
+  - service: scene.turn_on
+    target:
+      entity_id: '{{ states(''input_select.ankleide_bad_scenen'')}}'
+  mode: single
+  icon: mdi:ceiling-light-multiple-outline
+aa_blink_foto:
+  alias: Blink Snap Picture
+  sequence:
+  - service: blink.trigger_camera
+    target:
+      entity_id: camera.camblink1
+    data: {}
+  - delay: 00:00:05
+  - service: blink.trigger_camera
+    target:
+      entity_id: camera.camblink2
+    data: {}
+  - delay: 00:00:05
+  - service: camera.snapshot
+    data:
+      filename: /config/tmp/blink1Image.jpg
+    target:
+      entity_id: camera.camblink1
+  - delay: 00:00:05
+  - service: camera.snapshot
+    data:
+      filename: /config/tmp/blink2Image.jpg
+    target:
+      entity_id: camera.camblink2
+blink_ein_video:
+  alias: blink ein video
+  sequence:
+  - service: blink.save_video
+    data:
+      filename: /config/tmp/test1video.mp3
+      name: blink CamBlink1
+  mode: single
+blink_blinki:
+  alias: blink blinki
+  sequence:
+  - service: blink.save_recent_clips
+    data:
+      file_path: /config/tmp/videos/
+      name: blink CamBlink1
+  mode: single
+homeoffice_swr3_spielen:
+  alias: 'Homeoffice: SWR3 spielen'
+  sequence:
+  - data:
+      media_content_id: http://tunein.com/radio/SWR3-933-s57728/
+      media_content_type: music
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+homeoffice_roon_play_swr3:
+  alias: 'Homeoffice: Roon: Play SWR3'
+  sequence:
+  - data:
+      media_content_type: music
+      media_content_id: My Live Radio/SWR3
+    action: media_player.play_media
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data:
+      shuffle: true
+    action: media_player.shuffle_set
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  - data: {}
+    action: media_player.media_next_track
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  mode: single
+  icon: mdi:music
+rasen_oben_wasser_an:
+  alias: 'Rasen oben: Wasser an'
+  sequence:
+  - service: ifttt.trigger
+    data:
+      event: rasenwasseran
+  mode: single
+  icon: mdi:grass
+rasen_oben_wasser_aus:
+  alias: 'Rasen oben: Wasser aus'
+  sequence:
+  - service: ifttt.trigger
+    data:
+      event: rasenwasseraus
+  mode: single
+  icon: mdi:grass
+homeoffice_wave2_cool_dramatically:
+  alias: 'Homeoffice: Wave2: Cool dramatically'
+  sequence:
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 0b0d90e099774589bd9328e732d734ba
+    type: select_option
+    option: Startup
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 0fa01e6134e03424b31951ad500e1532
+    type: select_option
+    option: Cool
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: number
+    entity_id: ae37fc0817e7e926f144a4172609cd66
+    type: set_value
+    value: 16
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 7327e647627afbcbe062b6caea636e18
+    type: select_option
+    option: High
+  description: ''
+  icon: mdi:air-conditioner
+homeoffice_wave2_cool_20c_medium:
+  alias: 'Homeoffice: Wave2: Cool 20C Medium'
+  sequence:
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 0b0d90e099774589bd9328e732d734ba
+    type: select_option
+    option: Startup
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 0fa01e6134e03424b31951ad500e1532
+    type: select_option
+    option: Cool
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: number
+    entity_id: ae37fc0817e7e926f144a4172609cd66
+    type: set_value
+    value: 20
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 7327e647627afbcbe062b6caea636e18
+    type: select_option
+    option: Medium
+  description: ''
+  icon: mdi:air-conditioner
+homeoffice_wave2_shutdown:
+  alias: 'Homeoffice: Wave2: ShutDown'
+  sequence:
+  - device_id: 4e81c44f64cc4911a323e0bed6ad67b6
+    domain: select
+    entity_id: 0b0d90e099774589bd9328e732d734ba
+    type: select_option
+    option: Shutdown
+  description: ''
+  icon: mdi:air-conditioner
+get_tibber_prices:
+  alias: Get Tibber Prices
+  sequence:
+  - action: tibber.get_prices
+    metadata: {}
+    data:
+      end: '2024-11-10 00:00:00'
+      start: '2024-11-09 00:00:00'
+    response_variable: energy_overview
+  description: ''
+notification:
+  alias: Notification
+  sequence:
+  - action: notify.alexa_media_uberall
+    metadata: {}
+    data:
+      message: Dies ist ein Test
+      target: alexa_media_uberall
+  description: ''
+wohnzimmer_learn_amp_power:
+  alias: Wohnzimmer learn amp power
+  sequence:
+  - data:
+      device: amp_wohnzimmer
+      command: power
+      command_type: ir
+    action: remote.learn_command
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+wohnzimmer_amp_power_toggle:
+  alias: Wohnzimmer Amp Power toggle
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: amp_wohnzimmer
+      command: power
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+  icon: mdi:amplifier
+wohnzimmer_learn_amp_volume_up:
+  alias: Wohnzimmer learn amp volume up
+  sequence:
+  - data:
+      device: amp_wohnzimmer
+      command: volume_up
+      command_type: ir
+    action: remote.learn_command
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+wohnzimmer_learn_amp_volume_down:
+  alias: Wohnzimmer learn amp volume down
+  sequence:
+  - data:
+      device: amp_wohnzimmer
+      command: volume_down
+      command_type: ir
+    action: remote.learn_command
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+wohnzimmer_amp_volume_up:
+  alias: Wohnzimmer Amp Volume up
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: amp_wohnzimmer
+      command: volume_up
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+  icon: mdi:amplifier
+wohnzimmer_amp_volume_down:
+  alias: Wohnzimmer Amp Volume down
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: amp_wohnzimmer
+      command: volume_down
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+  icon: mdi:amplifier
+wohnzimmer_amp_volume_down_to_zero:
+  alias: Wohnzimmer Amp Volume down to zero
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 4
+      delay_secs: 0.4
+      hold_secs: 0
+      device: amp_wohnzimmer
+      command: volume_down
+    target:
+      device_id: 13f4fb14a203eebb23f538da3f735e39
+  description: ''
+  icon: mdi:amplifier
+wohnzimmer_music_indirect:
+  alias: 'Wohnzimmer: Music indirect'
+  sequence:
+  - action: script.wohnzimmer_amp_power_toggle
+    metadata: {}
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - action: script.wohnzimmer_amp_volume_down_to_zero
+    metadata: {}
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - repeat:
+      count: 2
+      sequence:
+      - action: script.wohnzimmer_amp_volume_up
+        metadata: {}
+        data: {}
+  - action: scene.turn_on
+    metadata: {}
+    data:
+      transition: 5
+    target:
+      entity_id: scene.wohnzimmer_indirekt
+  description: ''
+  icon: mdi:account-music-outline
+roborock_clean_office:
+  alias: Homeoffice reinigen
+  sequence:
+  - data:
+      entity_id: vacuum.l40s_pro_ultra
+      segment:
+      - 8
+    action: dreame_vacuum.vacuum_clean_segment
+  - delay:
+      seconds: 1
+  - target:
+      entity_id: vacuum.l40s_pro_ultra
+    action: vacuum.vacuum_start
+  icon: mdi:robot-vacuum
+roborock_clean_wohnen:
+  sequence:
+  - action: dreame_vacuum.vacuum_clean_segment
+    target:
+      device_id: a313cd0bb8e17c9cf1dcedee9b3a5c94
+    data:
+      segments: 8
+  alias: 'Dreame: Clean Homeoffice'
+  description: ''
+schlafzimmer_bett_licht_zeitabhangig:
+  sequence:
+  - choose:
+    - conditions:
+      - condition: sun
+        before: sunrise
+        after: sunset
+      sequence:
+      - type: turn_on
+        device_id: 8af6370fbb7883d2e1398defada0f0d6
+        entity_id: 56cdccbd165fcce2a4556bec5d52eae9
+        domain: light
+        brightness_pct: 10
+    - conditions:
+      - condition: sun
+        before: sunset
+        after: sunrise
+      sequence:
+      - type: turn_on
+        device_id: 8af6370fbb7883d2e1398defada0f0d6
+        entity_id: 56cdccbd165fcce2a4556bec5d52eae9
+        domain: light
+        brightness_pct: 65
+  alias: 'Schlafzimmer: Bett: Licht-Zeitabhängig'
+  description: ''
+beschattung_wohnzimmer:
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 50
+    target:
+      entity_id:
+      - cover.wohnzimmer_left_shutter
+      - cover.wohnzimmer_right_shutter
+  alias: Beschattung Wohnzimmer
+  description: ''
+beschattung_wohnzimmer_offnen:
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 100
+    target:
+      entity_id:
+      - cover.wohnzimmer_left_shutter
+      - cover.wohnzimmer_right_shutter
+  alias: Beschattung Wohnzimmer öffnen
+  description: ''
+gute_nacht:
+  sequence:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      floor_id: og
+      area_id: garten
+  - type: turn_off
+    device_id: 1c6ced35933e2f30c4bc5044eed49ff7
+    entity_id: f443be0a0ae51a4416d5ef85d3259b63
+    domain: remote
+  - action: script.klima_nach_60m_aus
+    metadata: {}
+    data: {}
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.front_door_innen_privatsphare_modus
+  alias: Gute Nacht
+  description: ''
+klima_nach_60m_aus:
+  sequence:
+  - delay:
+      hours: 1
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - action: climate.set_hvac_mode
+    metadata: {}
+    data:
+      hvac_mode: 'off'
+    target:
+      device_id: aae12036b0ec43ae76f09680a724e375
+  alias: Klima nach 60m aus
+  description: ''
+dreame_clean_living_area:
+  sequence:
+  - action: dreame_vacuum.vacuum_clean_segment
+    target:
+      device_id: a313cd0bb8e17c9cf1dcedee9b3a5c94
+    data:
+      segments:
+      - '7'
+      - '3'
+      - '6'
+      - '5'
+  alias: 'Dreame: Clean Living area'
+  description: ''
+notify_all_v2:
+  sequence:
+  - variables:
+      push_data: "{% if critical %} {\n  \"push\": {\n    \"sound\": {\n     \"name\":
+        \"default\",\n     \"critical\": 1,\n      \"volume\": 1.0\n     }\n  }\n}
+        {% else %} {} {% endif %}"
+    alias: push_data Variable, um den Channel "Critical" beim Iphone zu abonnieren
+  - variables:
+      targets: "{% set t = [] %} \n{% if group_admins %}\n  {% set t = t + [\"notify.mobile_app_ck15_pro\",
+        \"notify.mobile_app_iphone\"] %}\n{% endif %} \n{% if group_family %}\n  {%
+        set t = t + [\"notify.mobile_app_ck15_pro\", \"notify.mobile_app_iphone\",
+        \"notify.mobile_app_iphone_14_isa\", \"notify.mobile_app_bens_iphone\"] %}\n{%
+        endif %} \n{% if alexa %}\n  {% set t = t + [\"notify.office_echo_show_sprechen\"]
+        %}\n{% endif %} \n{{ t | unique | list }}"
+    alias: targets für alle gewünschten "notify" Dienste
+  - variables:
+      alexa_devices: '{{ targets | select(''search'', ''notify.alexa_media'') | list
+        }}'
+    alias: 'alexa_devices : Filter um nur die alexa Devices für den Dienst zu filtern'
+  - variables:
+      media_players: '{% set media_players = alexa_devices | map(''replace'', ''notify.alexa_media_'',
+        ''media_player.'') | list %} {{ media_players }}
+
+        '
+    alias: 'media_players: Aus dem Dienst werden automatisch alle Media_Player Entitätsnamen
+      abgeleitet.'
+  - variables:
+      volume_level: "{% if critical %}\n  0.8\n{% else %}\n  0.2\n{% endif %}\n"
+    alias: 'volume_level: Wenn critical aktiviert ist, wir eine andere Lautstärke
+      gewählt , anonsten default für die Ausgabe'
+  - repeat:
+      for_each: '{{ media_players }}'
+      sequence:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: '{{ volume_level }}'
+        target:
+          entity_id: '{{ repeat.item }}'
+    enabled: true
+  - repeat:
+      sequence:
+      - action: '{{ repeat.item }}'
+        data:
+          title: '{{ title }}'
+          message: '{{ message }}'
+          data: '{{ push_data }}'
+      for_each: '{{ targets }}'
+    enabled: true
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - repeat:
+      for_each: '{{ media_players }}'
+      sequence:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.1
+        target:
+          entity_id: '{{ repeat.item }}'
+    enabled: true
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: '{{ targets }}'
+  alias: Notify All V2
+  description: ''
+  fields:
+    message:
+      selector:
+        text:
+          multiline: true
+      name: message
+    title:
+      selector:
+        text:
+      name: title
+    group_admins:
+      selector:
+        boolean: {}
+      name: group_admins
+      required: true
+    group_family:
+      selector:
+        boolean: {}
+      name: group_family
+      required: true
+    critical:
+      selector:
+        boolean: {}
+      name: critical
+      required: true
+    alexa:
+      selector:
+        boolean: {}
+      name: alexa
+      required: true
+guten_morgen:
+  sequence:
+  - type: turn_on
+    device_id: 28a353b0dc7f55548d8f10496daab454
+    entity_id: 497c719329607906ae2fc8d000d65ed9
+    domain: switch
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media_content_id: P1
+      media_content_type: preset
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+    enabled: false
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.front_door_innen_privatsphare_modus
+  - action: media_player.select_source
+    metadata: {}
+    data:
+      source: SWR3
+    target:
+      device_id: 1114dade8e13e06556e37d1f1db30b1c
+  alias: Guten Morgen
+  description: ''

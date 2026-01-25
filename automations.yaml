@@ -1,0 +1,3771 @@
+- id: '1631356682050'
+  alias: 'Homeoffice: Printer Switch On'
+  description: ''
+  triggers:
+  - device_id: c57aabdfad178ae324eb371e51796b94
+    domain: hue
+    type: long_release
+    subtype: 1
+    unique_id: 42ebfba4-14fd-4cbf-b743-b9e796aaebc0
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: f8249bdaee1838a0e44e14c2a2a3f93c
+    entity_id: 6ded9b58e18867f271531e7938279a2d
+    domain: switch
+  mode: single
+- id: '1632051198684'
+  alias: Garten-Wasser-Hue-Button-an
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: 6456b14094e9453d21b082783066a980
+    type: action
+    subtype: 'on'
+    trigger: device
+  conditions: []
+  actions:
+  - data:
+      event: gartenwasseran
+    action: ifttt.trigger
+  mode: restart
+  max: 10
+- id: '1632587800975'
+  alias: 'Schlafzimmer: Nachtlicht an'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: f821c145529adb8ef74d2e26e937364a
+    entity_id: 23f245f2f49a30827f22ad42637394c9
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - type: is_illuminance
+    condition: device
+    device_id: f821c145529adb8ef74d2e26e937364a
+    entity_id: 2cd57e00b6a5b3221fb838af6b7166ad
+    domain: sensor
+    below: 100
+  - condition: time
+    before: '22:30:00'
+    after: 07:00:00
+  actions:
+  - type: turn_on
+    device_id: c4cc71b635101aa372c04fdae617fd28
+    entity_id: light.aura
+    domain: light
+    brightness_pct: 5
+    enabled: false
+  - type: turn_on
+    device_id: 1e3f1cf75f9392566261b3f8140e444e
+    entity_id: light.hue_lightstrip_plus_2
+    domain: light
+    brightness_pct: 5
+    enabled: false
+  - target:
+      entity_id: scene.schlafzimmer_nachtlicht_rot_duplizieren
+    metadata: {}
+    enabled: true
+    action: scene.turn_on
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 25
+      milliseconds: 0
+  - target:
+      entity_id: scene.schlafzimmer_nachtlicht_aus
+    metadata: {}
+    action: scene.turn_on
+    data: {}
+  - type: turn_off
+    device_id: c4cc71b635101aa372c04fdae617fd28
+    entity_id: light.aura
+    domain: light
+    enabled: false
+  - type: turn_off
+    device_id: 1e3f1cf75f9392566261b3f8140e444e
+    entity_id: light.hue_lightstrip_plus_2
+    domain: light
+    enabled: false
+  mode: single
+- id: '1632656345124'
+  alias: 'Garten: Wasser alle 3h abstellen'
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /3
+  condition: []
+  action:
+  - service: ifttt.trigger
+    data:
+      event: gartenwasseraus
+  mode: single
+- id: '1633290820636'
+  alias: 'All: Shellys und Beleuchtung aus'
+  description: ''
+  triggers:
+  - at: '23:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 8baa017c5fce9840d661d31ecccdbf5a
+    entity_id: switch.shelly_eingangstur
+    domain: switch
+  - type: turn_off
+    device_id: 1057901a18a7426832a60c9b185e107e
+    entity_id: switch.shelly_treppe_oben
+    domain: switch
+  - type: turn_off
+    device_id: 9b2812db5585cb5ca109502fe7c7590b
+    entity_id: switch.shelly_flur_unten
+    domain: switch
+  - type: turn_off
+    device_id: c3cb16153255db5d9fb63c0dbe8a01ea
+    entity_id: switch.shelly_leuchte_garage
+    domain: switch
+  - type: turn_off
+    device_id: a6e116e849d1d2b75bd731d6d5f278cb
+    entity_id: switch.shelly_treppe_ug2
+    domain: switch
+  - type: turn_off
+    device_id: cd147063c79231802222d51558d2b9ae
+    entity_id: light.elgato_key_light_air
+    domain: light
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.homeofficexnsp_relay_1
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id:
+      - technik
+      - atelier
+      - garten
+  mode: single
+- id: '1633928564879'
+  alias: 'Wohnzimmer Flur: Shelly Eingangstür nach 10m ausschalten'
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 8baa017c5fce9840d661d31ecccdbf5a
+    entity_id: switch.shelly_eingangstur
+    domain: switch
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 8baa017c5fce9840d661d31ecccdbf5a
+    entity_id: switch.shelly_eingangstur
+    domain: switch
+  mode: single
+- id: '1633932523914'
+  alias: 'Zone: Paul verlässt Schule'
+  description: ''
+  triggers:
+  - entity_id: person.paul_kirschniak
+    zone: zone.goldberg_gymnasium
+    event: leave
+    trigger: zone
+  conditions: []
+  actions:
+  - device_id: f744058481d56d356770555151af1d4f
+    domain: mobile_app
+    type: notify
+    message: Paul verlässt Goldberg Gymnasium
+  mode: single
+- id: '1633946125701'
+  alias: 'Wohnzimmer Flur: Shelly Flur oben nach 10m ausschalten'
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 1057901a18a7426832a60c9b185e107e
+    entity_id: switch.shelly_treppe_oben
+    domain: switch
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 1057901a18a7426832a60c9b185e107e
+    entity_id: switch.shelly_treppe_oben
+    domain: switch
+  mode: single
+- id: '1634030783670'
+  alias: 'UG2: Licht auf Treppe nach Bewegung 2m aktivieren'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 15124b04fe804b3d15178c45079e11db
+    entity_id: eba9a97188667aeb52b3a7314aa754f6
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: a6e116e849d1d2b75bd731d6d5f278cb
+    entity_id: switch.shelly_treppe_ug2
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 3
+      seconds: 0
+  - type: turn_off
+    device_id: a6e116e849d1d2b75bd731d6d5f278cb
+    entity_id: switch.shelly_treppe_ug2
+    domain: switch
+  mode: restart
+- id: '1634030896058'
+  alias: 'Zone: Ben verlässt Schule'
+  description: ''
+  triggers:
+  - entity_id: person.ben_kirschniak
+    zone: zone.karls_gymnasium
+    event: leave
+    trigger: zone
+  conditions: []
+  actions:
+  - action: notify.mobile_app_iphone
+    metadata: {}
+    data:
+      message: Ben verlässt die Schule
+  mode: single
+- id: '1634387924549'
+  alias: 'Homeoffice Lichtschalter: Aus'
+  description: ''
+  trigger:
+  - device_id: c57aabdfad178ae324eb371e51796b94
+    domain: hue
+    platform: device
+    type: short_release
+    subtype: 4
+    unique_id: d67649b6-9e17-4cb1-a616-e7d0ae980946
+  condition: []
+  action:
+  - scene: scene.homoffice_licht_aus
+  mode: single
+- id: '1634387886461'
+  alias: 'Homeoffice Lichtschalter: Energizer'
+  description: ''
+  trigger:
+  - device_id: c57aabdfad178ae324eb371e51796b94
+    domain: hue
+    platform: device
+    type: short_release
+    subtype: 1
+    unique_id: 42ebfba4-14fd-4cbf-b743-b9e796aaebc0
+  condition: []
+  action:
+  - scene: scene.homeoffice_energizer
+  mode: single
+- id: '1636123430341'
+  alias: 'Homeoffice: Up bei wenig Licht'
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: 64257f13be14b9828c20103126ce8c44
+    entity_id: b467e0103e72b34376502bba9ce0b8c3
+    domain: sensor
+    trigger: device
+    below: 200
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions:
+  - condition: sun
+    after: sunrise
+    before: sunset
+  - condition: time
+    after: '13:00:00'
+  actions:
+  - target:
+      entity_id:
+      - cover.homeoffice_right_shutter
+      - cover.homeoffice_left_shutter
+    data: {}
+    action: cover.open_cover
+  mode: single
+- id: '1636124026140'
+  alias: Haus Extern Verdunkelung bei Sonnenuntergang
+  description: ''
+  triggers:
+  - event: sunset
+    offset: 00:35:00
+    trigger: sun
+  conditions: []
+  actions:
+  - target:
+      entity_id:
+      - cover.kuche_rechts
+      - cover.kuche_links
+      - cover.toilette_eg_shutter
+      - cover.schlafzimmer_shutter
+      - cover.media_shutter
+      - cover.atelier_shutter
+    action: cover.close_cover
+    data: {}
+  mode: single
+- id: '1636124072180'
+  alias: Küche hell bei Sonnenaufgang
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunrise
+    offset: '0'
+  condition: []
+  action:
+  - service: cover.open_cover
+    target:
+      entity_id:
+      - cover.kuche_links
+      - cover.kuche_rechts
+      - cover.toilette_eg_shutter
+  mode: single
+- id: '1636189866611'
+  alias: Homeoffice Shades 50% bei Licht
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: 64257f13be14b9828c20103126ce8c44
+    entity_id: b467e0103e72b34376502bba9ce0b8c3
+    domain: sensor
+    trigger: device
+    above: 400
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  conditions:
+  - condition: time
+    before: '14:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  actions:
+  - target:
+      entity_id:
+      - cover.homeoffice_left_shutter
+      - cover.homeoffice_right_shutter
+    data:
+      position: 55
+    action: cover.set_cover_position
+  mode: single
+- id: '1636271756188'
+  alias: 'Schlafzimmer: Shutter hoch 7:45 on workdays'
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:45
+  condition:
+  - condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  action:
+  - service: cover.open_cover
+    target:
+      entity_id: cover.schlafzimmer_shutter
+  mode: single
+- id: '1636304421059'
+  alias: UG1 Verdunkeln
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 01:30:00
+  condition: []
+  action:
+  - service: cover.close_cover
+    target:
+      entity_id:
+      - cover.paul_shutter
+      - cover.ben_door_shutter
+      - cover.ben_main_shutter
+      - cover.flur_rechts_shutter
+  mode: single
+- id: '1636304498555'
+  alias: UG Sonnenaufgang
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunrise
+    offset: '0'
+  condition: []
+  action:
+  - service: cover.open_cover
+    target:
+      entity_id:
+      - cover.flur_rechts_shutter
+      - cover.flur_tur_links_shutter
+      - cover.atelier_shutter
+  mode: single
+- id: '1636304564041'
+  alias: UG Rest Shutter öffnen (10:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:30
+  condition:
+  - condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  action:
+  - service: cover.open_cover
+    target:
+      entity_id:
+      - cover.ben_door_shutter
+      - cover.ben_main_shutter
+      - cover.media_shutter
+  mode: single
+- id: '1636304700521'
+  alias: Flur Tür schliessen
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:00'
+  condition: []
+  action:
+  - service: cover.close_cover
+    target:
+      entity_id: cover.flur_tur_links_shutter
+  mode: single
+- id: '1637433024984'
+  alias: 'Garage: Motion Sensor: Licht einschalten'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 58428b7edefd0ede30ba18153e8aedc8
+    entity_id: dd3e5fa90ea0e022b709e29b20455728
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: c3cb16153255db5d9fb63c0dbe8a01ea
+    entity_id: switch.shelly_leuchte_garage
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: c3cb16153255db5d9fb63c0dbe8a01ea
+    entity_id: switch.shelly_leuchte_garage
+    domain: switch
+  mode: restart
+- id: '1639292532075'
+  alias: 'Wohnzimmer: Kaffee aus um 15:00'
+  description: ''
+  triggers:
+  - at: '15:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 28a353b0dc7f55548d8f10496daab454
+    entity_id: 497c719329607906ae2fc8d000d65ed9
+    domain: switch
+  mode: single
+- id: '1641474810667'
+  alias: Wohnzimmer Licht aus bei 600Lm
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: eab5e91bd686fe25e0105136709b5554
+    entity_id: a7979bc8a2b9f909e2902bfbf3d26d3e
+    domain: sensor
+    trigger: device
+    above: 600
+  conditions:
+  - condition: sun
+    after: sunrise
+    after_offset: '3'
+    before: sunset
+    before_offset: '2'
+  actions:
+  - target:
+      area_id: wohnzimmer
+    data:
+      transition: 5
+    action: light.turn_off
+  mode: single
+- id: '1642400614272'
+  alias: 'UG: Lichter in Jungs-Zimmer aus um 7:30'
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:30
+  condition: []
+  action:
+  - service: light.turn_off
+    target:
+      area_id:
+      - ben
+      - paul
+  mode: single
+- id: '1645853096491'
+  alias: Homeoffice Shades auf um 13:00
+  description: ''
+  triggers:
+  - at: '14:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      entity_id:
+      - cover.homeoffice_left_shutter
+      - cover.homeoffice_right_shutter
+    action: cover.open_cover
+  mode: single
+- id: '1650808281774'
+  alias: Regenverlauf
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:30:00'
+  condition: []
+  action:
+  - data_template:
+      entity_id: input_number.2_days_rain
+      value: '{{states.input_number.yesterday_rain.state}}'
+    service: input_number.set_value
+    enabled: true
+  - data_template:
+      entity_id: input_number.yesterday_rain
+      value: '{{states.sensor.gw2000a_daily_rain_rate_piezo}}'
+    service: input_number.set_value
+  mode: single
+- id: '1650818164259'
+  alias: Wohnzimmer TV an Licht ändern
+  description: ''
+  triggers:
+  - device_id: 1c6ced35933e2f30c4bc5044eed49ff7
+    domain: media_player
+    entity_id: cc807e51764e5d24d8a7432fe147f8ac
+    type: turned_on
+    trigger: device
+  conditions:
+  - condition: sun
+    after: sunset
+  actions:
+  - data: {}
+    action: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_fernsehen_2
+  mode: single
+- id: '1651305767651'
+  alias: 'Homeoffice: Ikea Luftreinigung Büro an über 20'
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.sauna2_ho_indoor_air_quality
+    above: 18
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: group.familiy
+    state: home
+  actions:
+  - type: turn_on
+    device_id: 48a2ad0b66d44ca7e03cf12c45ae62a9
+    entity_id: b2f74b307c7b4db87c7e55f8bc2883d6
+    domain: switch
+  mode: single
+- id: '1651406485011'
+  alias: Garagentor Schliessen bei Sonnenuntergang
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 0
+  condition:
+  - condition: device
+    device_id: 7ea0e5c095ec50705f1bc64092ff6d6d
+    domain: cover
+    entity_id: cover.garagentor_garage
+    type: is_open
+  action:
+  - device_id: 7ea0e5c095ec50705f1bc64092ff6d6d
+    domain: cover
+    entity_id: cover.garagentor_garage
+    type: close
+  mode: single
+- id: '1652040508351'
+  alias: Küche Tablet laden wenn <25%
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.fire_tablet_battery
+    below: '25'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 01038ff6b700c47bba0ceab626514b35
+    entity_id: switch.tablet_dose
+    domain: switch
+  mode: single
+- id: '1652040563341'
+  alias: Küche Tablet Strom aus wenn >80%
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.fire_tablet_battery
+    above: 85
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 01038ff6b700c47bba0ceab626514b35
+    entity_id: switch.tablet_dose
+    domain: switch
+  mode: single
+- id: '1652513364136'
+  alias: Schlafzimer Klima Steuerung Abends
+  description: ''
+  triggers:
+  - event: sunset
+    offset: 0
+    trigger: sun
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.schlafzimmer_temp_temperature
+    above: 24
+  actions:
+  - action: climate.set_temperature
+    metadata: {}
+    data:
+      temperature: 23
+      hvac_mode: cool
+    target:
+      entity_id: climate.schlafzimmer_ac_direct_klimaanlage_mqtt_hvac
+  mode: single
+- id: '1652544981081'
+  alias: Schlafzimer Klima Steuerung Abends ausschalten
+  description: ''
+  triggers:
+  - event: sunrise
+    offset: 0
+    trigger: sun
+  conditions: []
+  actions:
+  - data: {}
+    action: climate.turn_off
+    target:
+      device_id: aae12036b0ec43ae76f09680a724e375
+  mode: single
+- id: '1654377635434'
+  alias: 'Schlafzimmer: Deckenvent an 33%'
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - type: toggle
+    device_id: b3cb33375631c72648582bb635a000a6
+    entity_id: fan.bedroom_fan
+    domain: fan
+  - data:
+      percentage: 33
+    target:
+      device_id: b3cb33375631c72648582bb635a000a6
+    enabled: false
+    action: fan.set_percentage
+  - delay:
+      hours: 1
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: b3cb33375631c72648582bb635a000a6
+    entity_id: fan.bedroom_fan
+    domain: fan
+  mode: restart
+  max: 10
+- id: '1654446090599'
+  alias: Wohnzimmer Luftverbesserung >10 an
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.zhimi_mb5_930d_pm25_density_2
+    attribute: environment.pm2_5_density
+    above: 6
+    trigger: numeric_state
+  conditions:
+  - type: is_not_open
+    condition: device
+    device_id: 1a8328e46e5a7b054d86d4c7b2bf1f23
+    entity_id: 7193c14b966e2175641885c32a0e8a1d
+    domain: binary_sensor
+  actions:
+  - type: turn_on
+    device_id: 18fce658972ff87e29591fecfb90e051
+    entity_id: c5d2a0420bb0c64530e09f68fa832082
+    domain: fan
+  mode: single
+- id: '1654446150129'
+  alias: Wohnzimmer Luftverbesserung aus bei Tür auf
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 1a8328e46e5a7b054d86d4c7b2bf1f23
+    entity_id: 7193c14b966e2175641885c32a0e8a1d
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 18fce658972ff87e29591fecfb90e051
+    entity_id: c5d2a0420bb0c64530e09f68fa832082
+    domain: fan
+  mode: single
+- id: '1654446211565'
+  alias: 'Homeoffice: Ikea Luftreinigung aus bei Tür auf '
+  description: ''
+  triggers:
+  - type: opened
+    device_id: f85ef62a39ef3b87bd0e5728b8eebbaa
+    entity_id: 300bda8bd5c9ea1f44a502746fbb7cd6
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 48a2ad0b66d44ca7e03cf12c45ae62a9
+    entity_id: b2f74b307c7b4db87c7e55f8bc2883d6
+    domain: switch
+  mode: single
+- id: '1654446555813'
+  alias: 'Schlafzimmer: Luftreinigung aus bei Tür auf '
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 2da6cd86a21e2ff3a8591f94d7649761
+    entity_id: binary_sensor.schlafzimmer_fenster
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: c3c4bfddf6c46d981df61cefb49a3f95
+    entity_id: fan.pure_cool_link
+    domain: fan
+  mode: single
+- id: '1659015280000'
+  alias: 'Küche: Wasserleck'
+  description: ''
+  triggers:
+  - type: moist
+    device_id: 4fab6ce79f453fd806cb85f44a36550d
+    entity_id: 2a9ecd4b0da2887af1fbd4531d470615
+    domain: binary_sensor
+    trigger: device
+  - type: moist
+    device_id: f9a400547ba5225b035fb4d0cd97ee72
+    entity_id: a6b77981da0c24e284cd9c4611690ab4
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_iphone
+    data: {}
+  - data:
+      message: Wasserleck Küche (Quocker)
+    action: notify.alexa_media_uberall
+  - data:
+      message: Wasserleck Küche Quocker
+    action: notify.persistent_notification
+  - action: notify.mobile_app_iphone
+    data:
+      message: Wasserleck Küche unter Waschbecken
+  mode: single
+- id: '1659020749295'
+  alias: 'Technik: Wasserleck '
+  description: ''
+  triggers:
+  - type: moist
+    device_id: df8ff76d4305890a5a7919532048c321
+    entity_id: binary_sensor.waschkuche_wasser_flood
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_ck_16_max
+    metadata: {}
+    data:
+      message: Wasser in der Waschküche
+  mode: single
+- id: '1664006312383'
+  alias: Homeoffice Licht aus nach 5m
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: 204ac042566eeceb029902f6a2ccebc2
+    entity_id: f53125dc9afff2871505bf21fcf18165
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - data: {}
+    action: light.turn_off
+    target:
+      device_id:
+      - bf4250da086ce5ce773e65c7813c0ed8
+      - 8fdde933d1ba53ffaf7a3a8b5d7c47f4
+      - 92bfc41fa0a8132b98a7b0591a0bba22
+      - 8193e639db6cc0608fbc3253a58f14bb
+      - 24856418ee4ddf5a5f9cea15c2599bf0
+  mode: single
+- id: '1665302863604'
+  alias: Kompressor ausschalten
+  description: Turn off the compressor's smart switches at 19:00 every day.
+  triggers:
+  - at: '19:00:00'
+    trigger: time
+  conditions:
+  actions:
+  - target:
+      entity_id:
+      - switch.garage_smart_switch_2_outlets_outlet
+      - switch.garage_smart_switch_2_outlets_outlet_3
+    action: switch.turn_off
+    data: {}
+  - data:
+      message: Kompressor switches turned off at 19:00.
+    action: notify.notify
+  mode: single
+- id: '1670066787711'
+  alias: Schlafzimmer Nachtlicht rot
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: f821c145529adb8ef74d2e26e937364a
+    entity_id: 23f245f2f49a30827f22ad42637394c9
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - type: is_illuminance
+    condition: device
+    device_id: f821c145529adb8ef74d2e26e937364a
+    entity_id: 2cd57e00b6a5b3221fb838af6b7166ad
+    domain: sensor
+    below: 50
+  - condition: time
+    before: 07:00:00
+    after: '22:30:00'
+  actions:
+  - type: turn_on
+    device_id: c4cc71b635101aa372c04fdae617fd28
+    entity_id: light.aura
+    domain: light
+    brightness_pct: 5
+    enabled: false
+  - type: turn_on
+    device_id: 1e3f1cf75f9392566261b3f8140e444e
+    entity_id: light.hue_lightstrip_plus_2
+    domain: light
+    brightness_pct: 5
+    enabled: false
+  - target:
+      entity_id: scene.schlafzimmer_nachtlicht_rot
+    metadata: {}
+    action: scene.turn_on
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 35
+      milliseconds: 0
+  - target:
+      entity_id: scene.schlafzimmer_licht_aus
+    metadata: {}
+    action: scene.turn_on
+    data: {}
+  - type: turn_off
+    device_id: c4cc71b635101aa372c04fdae617fd28
+    entity_id: light.aura
+    domain: light
+    enabled: false
+  - type: turn_off
+    device_id: 1e3f1cf75f9392566261b3f8140e444e
+    entity_id: light.hue_lightstrip_plus_2
+    domain: light
+    enabled: false
+  mode: single
+- id: '1691928563469'
+  alias: Homeoffice NSP Auto 1
+  description: ''
+  use_blueprint:
+    path: Blackymas/nspanel_blueprint.yaml
+    input:
+      nspanel_name: c69a5b6d5b60a79f69b3e096904e00c6
+      language: de
+      weather_entity: weather.forecast_home
+      outdoortemp: sensor.gw2000a_outdoor_temperature
+      indoortemp: sensor.wohnzimmer_temp_sensor_temperature
+      chip01: switch.printer
+      chip01_icon: mdi:printer
+      qrcode_enabled: true
+      left_button_name: Balkonlicht
+      chip02: switch.ikea_outlet_1_dysen_lufteiniger_neu_switch
+      chip02_icon: mdi:fan
+      chip03: switch.silvercrest_smart_steckerleiste_1_l1
+      chip03_icon: mdi:surround-sound
+      climate_button08: switch.ikea_outlet_1_dysen_lufteiniger_neu_switch
+      climate_button08_icon: mdi:fan
+      entitypages_enabled: true
+      home_value01_icon: mdi:water-percent
+      home_value02_icon: ''
+      entity_page01_label: Küche
+      entities_entity01: sensor.temp_sensor_kuhlschrank_temperature
+      entities_entity01_name: Kühlschrank Temp
+      entities_entity01_icon: ''
+      entities_entity02: sensor.temp_sensor_kuhlschrank_humidity
+      entities_entity02_name: Kühlschrank Feuchtigkeit
+      entities_entity02_icon: ''
+      entity01: scene.wohnzimmer_aktivieren
+      entity01_name: Aktiv
+      button_page02_label: Geräte
+      entity09: script.roborock_clean_wohnen
+      entity09_name: Saugen & Wischen 2x
+      entity11_icon: ''
+      entity12_name: Ventilator
+      entity12_icon: ''
+      entity05: scene.wohnzimmer_fernsehen_2
+      entity05_name: Fernsehen
+      entity05_icon: ''
+      qrcode_label: Wifi
+      qrcode_value: WIFI:S:Gorkel.guest;T:WPA;P:hollythehound;;
+      home_value01: sensor.xiaomi_temp_sensor_homeoffice_luftfeuchtigkeit
+      left_button_hold_custom_action: []
+      left_button_hold_select: Default
+      climate: climate.wohnzimmer_tado
+      button_page03_label: Licht
+      entity17: light.schreibtisch_links
+      entity18: light.schreibtisch_rechts
+      entity19: light.homeoffice_osram_surface_decke_light
+      entity19_name: Decke
+      home_custom_button01_icon: ''
+      chip_font_size: '8'
+      entity01_icon_color:
+      - 250
+      - 217
+      - 0
+      home_value01_icon_color:
+      - 95
+      - 143
+      - 216
+      timezone: Europe/Berlin (CET-1CEST,M3.5.0,M10.5.0/3)
+      decimal_separator: ','
+      screensaver_display_time: true
+      screensaver_display_time_font_size: '11'
+      screensaver_display_time_font_color:
+      - 230
+      - 230
+      - 230
+      utilities_enabled: true
+      wake_up_sensors:
+      - binary_sensor.presence_sensor_fp2_aaf2_presence_sensor_2
+      utilities_page01_home_value1: sensor.energy_grid_power
+      utilities_page01_home_label: Strom aus dem Netz
+      utilities_page01_home_icon: mdi:transmission-tower
+      utilities_page01_grid_icon: mdi:solar-panel
+      utilities_page01_grid_value1: sensor.solarnet_total_energy
+      utilities_page01_grid_value2: sensor.solarnet_ladeleistung
+      relay_1_local_fallback: true
+      left_button_entity: light.homeofficexnsp_relay_1
+      home_outdoor_temp_font: '3'
+      button_pages_icon_size: '7'
+      entity02: scene.wohnzimmer_indirekt
+      entity02_name: Indirekt
+      entity02_icon_color:
+      - 233
+      - 0
+      - 250
+      entity03: scene.wohnzimmer_essen
+      entity03_name: Essen
+      entity04: scene.wohnzimmer_aus
+      entity04_name: Aus
+      entity06: scene.wohnzimmer_energizer_duplicate
+      entity06_name: Warm
+      entity03_icon_color:
+      - 0
+      - 250
+      - 175
+      entity04_icon_color:
+      - 87
+      - 0
+      - 250
+      entity05_icon_color:
+      - 250
+      - 0
+      - 0
+      entity09_icon_color:
+      - 250
+      - 0
+      - 0
+      entity09_icon: mdi:robot-vacuum
+      entity09_confirm: true
+      entity08_confirm: false
+      custom_buttons_font_size: '7'
+      home_custom_button04_icon: ''
+      right_button_entity: light.smart_christmas_light_cct
+      right_button_name: Christmas
+- id: '1691937518733'
+  alias: Schlafzimmer NSPANEL
+  description: ''
+  use_blueprint:
+    path: Blackymas/nspanel_blueprint.yaml
+    input:
+      nspanel_name: dd3bf73faae80a8c86d85b04a472394e
+      language: de
+      weather_entity: weather.forecast_home
+      indoortemp: sensor.nspanel_temperature
+      climate: climate.schlafzimmer_ac_direct_klimaanlage_mqtt_hvac
+      left_button_entity: light.schlafzimmer_bett_led
+      left_button_name: Bett LED
+      button_page01_label: Beleuchtung
+      entity01: light.schlafzimmer_bett_led
+      entity02: script.ankleide_bad_switch_scenes
+      entity01_name: Bett LED
+      entity02_name: Ankleide / Bad
+      climate_button09: fan.bedroom_fan
+      climate_button09_icon: mdi:fan
+      left_button_hold_select: Custom Action
+      left_button_hold_custom_action:
+      - action: script.schlafzimmer_bett_licht_zeitabhangig
+        metadata: {}
+        data: {}
+      right_button_hold_select: Default
+      right_button_name: Ankleide/Bad
+      right_button_entity: script.ankleide_bad_switch_scenes
+      entity03: scene.schlafzimmer_romance
+      entity03_name: Romance
+      entity03_icon_color:
+      - 234
+      - 42
+      - 42
+      entity05: cover.schlafzimmer_shutter
+      entity05_name: Rolladen
+      outdoortemp: sensor.netatmo_gorkel_weather_innen_aussen_temperature
+      climate_chip_always_visible: true
+      home_custom_button01: light.schlafzimmer_schranke
+      home_custom_button01_name: Schränke
+      button_pages_icon_size: '7'
+      entity01_icon_color:
+      - 250
+      - 112
+      - 0
+      entity01_icon: mdi:led-strip-variant
+      entity05_icon_color:
+      - 0
+      - 250
+      - 142
+      chip01: cover.schlafzimmer_shutter
+- id: '1691941368272'
+  alias: Bad NSPANEL
+  description: ''
+  use_blueprint:
+    path: Blackymas/nspanel_blueprint.yaml
+    input:
+      language: de
+      weather_entity: weather.forecast_home
+      outdoortemp: sensor.netatmo_gorkel_weather_innen_aussen_temperature
+      indoortemp: sensor.aqara_temp_sensor_t2_temperature
+      climate: climate.schlafzimmer_ac_direct_klimaanlage_mqtt_hvac
+      climate_button09: fan.bedroom_fan
+      climate_button09_icon: ''
+      left_button_entity: script.ankleide_bad_switch_scenes
+      right_button_entity: light.schlafzimmer_bett_led
+      nspanel_name: 3abec4944cf1dfedf37e5a11ea8fa83b
+      left_button_name: Ankleide/Bad
+      right_button_name: Schlafzimmer
+      button_page01_label: Diverses
+      entity01: cover.schlafzimmer_shutter
+      entity01_name: Rolladen
+      home_custom_button01: scene.schlafzimmer_all_good_duplizieren
+      home_custom_button01_icon: mdi:brightness-7
+      home_custom_button02: scene.schlafzimmer_all_good
+      home_custom_button02_icon: mdi:brightness-6
+      entity02: light.schlafzimmer_gruppe_licht_ankleide
+      entity02_name: Ankleide
+      entity02_icon_color:
+      - 250
+      - 229
+      - 0
+      entity03: light.bad_gruppe_licht
+      entity03_icon_color:
+      - 0
+      - 250
+      - 187
+      home_outdoor_temp_font: '2'
+      home_value01: sensor.xiaomi_temp_sensor_schlafzimmer_temperatur
+      home_value01_icon_color:
+      - 218
+      - 81
+      - 0
+      home_value02: sensor.xiaomi_temp_sensor_schlafzimmer_luftfeuchtigkeit
+      home_value02_icon_color:
+      - 58
+      - 135
+      - 254
+      chip_font_size: '8'
+      chip01: light.bad
+      custom_buttons_font_size: '8'
+      qrcode_enabled: true
+      timezone: Europe/Berlin (CET-1CEST,M3.5.0,M10.5.0/3)
+      climate_chip_always_visible: true
+      home_custom_button03: light.schlafzimmer_schranke
+      home_custom_button03_icon: mdi:spotlight-beam
+      entity04: light.schlafzimmer_schranke
+      entity04_name: Schränke
+      entity04_icon_color:
+      - 209
+      - 157
+      - 1
+      button_pages_icon_size: '8'
+      entity05: scene.schlafzimmer_sauna
+      entity05_name: Sauna
+      entity05_icon_color:
+      - 250
+      - 50
+      - 0
+      home_custom_button02_name: Alles aus
+      home_custom_button03_name: Schränke
+      home_custom_button01_name: Licht an
+      entity03_name: Licht BAd
+      entity08: scene.schlafzimmer_all_good
+      entity08_name: Alles aus
+      entity08_icon_color:
+      - 233
+      - 250
+      - 0
+      right_button_hold_select: Custom Action
+      right_button_hold_custom_action:
+      - action: script.schlafzimmer_bett_licht_zeitabhangig
+        metadata: {}
+        data: {}
+      decimal_separator: ','
+      entity01_icon: mdi:window-shutter
+      entity01_icon_color:
+      - 250
+      - 158
+      - 0
+      home_value01_icon: ''
+      home_value03: sensor.bad_sensor_temperatur_sauna_temperature
+      home_value03_icon: kuf:scene_sauna
+      home_value03_icon_color:
+      - 251
+      - 9
+      - 33
+      home_value03_label_color:
+      - 250
+      - 0
+      - 0
+- id: '1692431999822'
+  alias: 'Media: Hue Dimmer Schalter Licht an'
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: 8c657fab7e90a448e0800db073df1cac
+    type: action
+    subtype: on-press
+    trigger: device
+  conditions: []
+  actions:
+  - data:
+      brightness: 255
+    target:
+      area_id: media
+    action: light.turn_on
+  mode: single
+- id: '1692432064396'
+  alias: Media Hue Dimmer Schalter Licht aus
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: 8c657fab7e90a448e0800db073df1cac
+    type: action
+    subtype: off-press
+    trigger: device
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      area_id: media
+    action: light.turn_off
+  mode: single
+- id: '1692523942635'
+  alias: Save Blink Video on Motion
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.camblink1_bewegung
+    to: 'on'
+  action:
+  - service: blink.save_video
+    data:
+      name: CamBlink1
+      filename: /tmp/videos/blink_video_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4
+- id: '1692524645853'
+  alias: Garten:Blink:Save Recent Clips from BlinkCam1
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /10
+  action:
+  - service: blink.save_recent_clips
+    target:
+      entity_id: camera.camblink1
+    data:
+      file_path: /media/GorkelMedia
+- id: '1692532233894'
+  alias: Garten:Blink:Save recent files BlinkCam2
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /10
+  condition: []
+  action:
+  - service: blink.save_recent_clips
+    target:
+      entity_id: camera.camblink2
+    data:
+      file_path: /media/GorkelMedia
+  mode: single
+- id: '1692547625758'
+  alias: Sun Protection - Forecast Temp & Sun Altitude Haupfront
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /15
+    alias: Check alle 15 Minuten
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: azimuth
+    above: 260
+    alias: Sonne zu weit im Westen
+    id: SonneWiederOkay
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: azimuth
+        above: 71
+        below: 220
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        above: 30
+      - condition: numeric_state
+        entity_id: sensor.openweathermap_temperature
+        above: 18
+      - condition: state
+        entity_id: input_boolean.cover_manage_cover_with_sun
+        state: 'on'
+      - condition: template
+        value_template: '{{ not state_attr(''automation.sun_protection_forecast_temp_sun_altitude'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingungen für Rollo muss runter
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+      - condition: template
+        value_template: '{{ state_attr(''automation.sun_protection_forecast_temp_sun_altitude'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingung für Rollo soll wieder hoch
+  action:
+  - if: []
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutz_hauptfront_50_sonnenschutz
+      metadata: {}
+    else:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutz_hauptfront_100_offen
+      metadata: {}
+    alias: Rollos runter
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutz_hauptfront_100_offen
+      metadata: {}
+    alias: Rollos wieder hoch
+  mode: single
+- id: '1692549741793'
+  alias: Sun Protection - Forecast Temp & Sun Altitude Schlafzimmer
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /15
+    alias: Check alle 15 Minuten
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: azimuth
+    above: 290
+    alias: Sonne zu weit im Westen
+    id: SonneWiederOkay
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: azimuth
+        above: 210
+        below: 270
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        above: 12.7
+      - condition: numeric_state
+        entity_id: sensor.openweathermap_temperature
+        above: 18
+      - condition: state
+        entity_id: input_boolean.cover_manage_cover_with_sun
+        state: 'on'
+      - condition: template
+        value_template: '{{ not state_attr(''automation.sun_protection_forecast_temp_sun_altitude_schlafzimmer'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingungen für Rollo muss runter
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+      - condition: template
+        value_template: '{{ state_attr(''automation.sun_protection_forecast_temp_sun_altitude_schlafzimmer'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingung für Rollo soll wieder hoch
+  action:
+  - if: []
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_schlafzimmer_0_geschlossen
+      metadata: {}
+    else:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_schlafzimmer_100_offen
+      metadata: {}
+    alias: Rollos runter
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_schlafzimmer_100_offen
+      metadata: {}
+    alias: Rollos wieder hoch
+  mode: single
+- id: '1692550077639'
+  alias: Sun Protection - Forecast Temp & Sun Altitude Küchenfront
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /15
+    alias: Check alle 15 Minuten
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: azimuth
+        above: 120
+        below: 270
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        above: 25
+      - condition: numeric_state
+        entity_id: sensor.openweathermap_temperature
+        above: 18
+      - condition: state
+        entity_id: input_boolean.cover_manage_cover_with_sun
+        state: 'on'
+      - condition: template
+        value_template: '{{ not state_attr(''automation.sun_protection_forecast_temp_sun_altitude_kuchenfront'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingungen für Rollo muss runter
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+      - condition: template
+        value_template: '{{ state_attr(''automation.sun_protection_forecast_temp_sun_altitude_kuchenfront'',
+          ''last_triggered'').day==now().day }}'
+      alias: Bedingung für Rollo soll wieder hoch
+  action:
+  - if: []
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_kuchenfront_0_sonnenschutz
+      metadata: {}
+    else:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_kuchenfront_100_offen
+      metadata: {}
+    alias: Rollos runter
+  - if:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: SonneWiederOkay
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.sonnenschutzt_kuchenfront_100_offen
+      metadata: {}
+    alias: Rollos wieder hoch
+  mode: single
+- id: '1693845433956'
+  alias: Add on Air Conditioning restart every 20m
+  description: ''
+  triggers:
+  - minutes: /30
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - data:
+      addon: c34eddb3_hisense_ac
+    action: hassio.addon_restart
+  mode: single
+- id: '1694355272768'
+  alias: Blink Fotos machen bei Bewegung
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: b1f149ecf3d72aab4fcae7afc93f6332
+    entity_id: 7840d539b65da425176ddf2b7fabaa7e
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: blink.trigger_camera
+    data: {}
+    target:
+      device_id:
+      - eed354a764cd6c8333019d077646ed5e
+      - b1f149ecf3d72aab4fcae7afc93f6332
+  mode: single
+- id: '1694356249991'
+  alias: Alle 15 M Blink Foto machen
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /15
+  condition: []
+  action:
+  - service: script.aa_blink_foto
+    data: {}
+  mode: single
+- id: '1694357783844'
+  alias: 'Garten: Rasenbewässerung bei Knopfdruck 10m'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_button.10_m_gartenbewasserung
+  condition: []
+  action:
+  - service: ifttt.trigger
+    data:
+      event: rasenwasseran
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - service: ifttt.trigger
+    data:
+      event: rasenwasseraus
+  mode: restart
+- id: '1700921476843'
+  alias: Ben Rauch Detektiert
+  description: ''
+  triggers:
+  - type: smoke
+    device_id: 4ee9d4bf46239ae5df11be1eef9f2ba9
+    entity_id: e0e9e769dbfec6d41e8f0f675644c97e
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - metadata: {}
+    data:
+      message: Rauch in Ben's Zimmer
+    action: notify.persistent_notification
+  - action: notify.send_message
+    metadata: {}
+    data:
+      message: 'ALARM: Rauchmelder in Ben''s Zimmer'
+    target:
+      device_id: 9aa05a31de5830b349072fe54806f32a
+  mode: single
+- id: '1701242231892'
+  alias: Schlafzimmer Klimaanlage nach Trocknen ausschalten (90m)
+  description: ''
+  trigger:
+  - platform: device
+    device_id: aae12036b0ec43ae76f09680a724e375
+    domain: climate
+    entity_id: 5eaa801c5e0dfbe71f216986022440eb
+    type: hvac_mode_changed
+    to: dry
+  condition: []
+  action:
+  - delay:
+      hours: 1
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - device_id: aae12036b0ec43ae76f09680a724e375
+    domain: climate
+    entity_id: 5eaa801c5e0dfbe71f216986022440eb
+    type: set_hvac_mode
+    hvac_mode: 'off'
+  mode: single
+- id: '1702675278769'
+  alias: 'Wohnzimmer: Nachtlicht'
+  triggers:
+  - type: occupied
+    device_id: a35d27ca4893918e90de4aa18328626b
+    entity_id: 2712f04a2d953960dfafd1d197759432
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: time
+    after: '23:00:00'
+    before: 06:00:00
+  actions:
+  - data:
+      color_name: darkred
+      brightness: 25
+    target:
+      entity_id:
+      - light.hue_beyond_down_1
+      - light.hue_beyond_up_1
+    action: light.turn_on
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - target:
+      entity_id:
+      - light.hue_beyond_down_1
+      - light.hue_beyond_up_1
+    data: {}
+    action: light.turn_off
+  mode: restart
+- id: '1705613637412'
+  alias: Wohnzimmer:Frame TV bei fehlender Belegung um 23:00 ausschalten
+  description: ''
+  triggers:
+  - at: '23:30:00'
+    trigger: time
+  - at: 01:00:00
+    trigger: time
+  conditions:
+  - type: is_not_occupied
+    condition: device
+    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
+    entity_id: 85b429dbd20888fd53e0d42845684da5
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  actions:
+  - type: turn_off
+    device_id: 1c6ced35933e2f30c4bc5044eed49ff7
+    entity_id: f443be0a0ae51a4416d5ef85d3259b63
+    domain: remote
+  mode: single
+- id: '1708171491643'
+  alias: Zigbee devices off
+  description: ''
+  use_blueprint:
+    path: Tahutipai/zigbee_zwave_notify_when_battery_devices_have_fallen_offline.yaml
+    input:
+      time: '13:06:00'
+      actions:
+      - service: notify.notify
+        metadata: {}
+        data:
+          message: 'Zigbee offline {{sensors}}:'
+- id: '1708796064787'
+  alias: 'Homeoffice: Motion detected: Light on'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: a6d437bcee94d2a872b453a580ed1cb2
+    entity_id: cbf90a663a38701aaadc0f116afd8ac0
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - type: is_illuminance
+    condition: device
+    device_id: 64257f13be14b9828c20103126ce8c44
+    entity_id: b467e0103e72b34376502bba9ce0b8c3
+    domain: sensor
+    below: 151
+  actions:
+  - metadata: {}
+    data:
+      brightness: 180
+      kelvin: 2800
+    target:
+      entity_id: light.homeoffice
+    action: light.turn_on
+  mode: single
+- id: '1708938112554'
+  alias: 'Technik: Turn Lüftungsanlage off at 10:00'
+  description: ''
+  triggers:
+  - at: '10:00:00'
+    trigger: time
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.gw2000a_outdoor_temperature
+    above: 12
+  actions:
+  - metadata: {}
+    data: {}
+    action: switch.turn_off
+    target:
+      device_id: 1b5a6d8cf71d01b8f6a77dc614b05c2b
+  mode: single
+- id: '1708938173290'
+  alias: 'Technik: Turn Lüftungsanlage on at 16:30'
+  description: ''
+  triggers:
+  - at: '16:30:00'
+    trigger: time
+  conditions: []
+  actions:
+  - data: {}
+    action: switch.turn_on
+    target:
+      device_id: 1b5a6d8cf71d01b8f6a77dc614b05c2b
+  mode: single
+- id: '1709984545931'
+  alias: 'Wohnzimmer: Strahler Küche'
+  description: ''
+  use_blueprint:
+    path: damru/ikea-rodret_E2201_ZHA-Z2M_control-anything.yaml
+    input:
+      on_press_action:
+      - metadata: {}
+        data:
+          transition: 1
+          brightness: 191
+          kelvin: 3560
+        action: light.turn_on
+        target:
+          entity_id: light.kuche_leiste_hue_gruppe
+      off_press_action:
+      - metadata: {}
+        data:
+          transition: 1
+        action: light.turn_off
+        target:
+          entity_id: light.kuche_leiste_hue_gruppe
+- id: '1709994989057'
+  alias: 'Garage: Switch: Licht an'
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: e0fb929ce0548eaae8c3a7357e1de9cc
+    type: action
+    subtype: 'on'
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: c3cb16153255db5d9fb63c0dbe8a01ea
+    entity_id: 3db5e385ed247d58f476bafc050c10fc
+    domain: light
+  mode: single
+- id: '1709995030680'
+  alias: 'Garage: Switch: Licht aus'
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: e0fb929ce0548eaae8c3a7357e1de9cc
+    type: action
+    subtype: 'off'
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: c3cb16153255db5d9fb63c0dbe8a01ea
+    entity_id: 3db5e385ed247d58f476bafc050c10fc
+    domain: light
+  mode: single
+- id: '1710063022175'
+  alias: 'Atelier: Schalter: Licht hinten'
+  description: ''
+  use_blueprint:
+    path: damru/ikea-rodret_E2201_ZHA-Z2M_control-anything.yaml
+    input:
+      on_press_action:
+      - type: turn_on
+        device_id: e86b76c8e9c64b2291a7e2002a5a2cb4
+        entity_id: 76bf42f8df167e8543e51cedeab0f2bc
+        domain: light
+      off_press_action:
+      - type: turn_off
+        device_id: e86b76c8e9c64b2291a7e2002a5a2cb4
+        entity_id: 76bf42f8df167e8543e51cedeab0f2bc
+        domain: light
+      remote_name: atelier_schalter_dimmer_ikea_hinten
+- id: '1710093174055'
+  alias: Backup Daily 3:30am
+  description: ''
+  trigger:
+  - platform: time
+    at: 03:30:00
+  condition: []
+  action:
+  - service: hassio.backup_full
+    metadata: {}
+    data:
+      compressed: true
+  mode: single
+- id: '1710686620262'
+  alias: Wohnzimmer Licht aus bei Nichtbelegung
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
+    entity_id: 85b429dbd20888fd53e0d42845684da5
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - metadata: {}
+    target:
+      entity_id: scene.wohnzimmer_aus
+    action: scene.turn_on
+    data: {}
+  mode: single
+- id: '1710686803513'
+  alias: 'Wohnzimmer: Licht an bei Bewegung '
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
+    entity_id: 85b429dbd20888fd53e0d42845684da5
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: time
+    after: 06:00:00
+    before: '23:00:00'
+  - type: is_illuminance
+    condition: device
+    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
+    entity_id: e75382eb8996e960465ae5fa7ceddcf9
+    domain: sensor
+    below: 200
+  actions:
+  - metadata: {}
+    data: {}
+    action: light.turn_on
+    target:
+      device_id:
+      - 67e860cc2ba4edb531ad6f49774aae2b
+      - eb85f47b87726c6361865f42deb3a805
+      - c83bc41253168fab1c82c05dad02dad0
+      - 8a3e90726d21b8a8621285b4c15830ef
+      - 002af697a985f04e2161a59a86b21b3e
+      - 0bc73068f9d24c4e6c80bbb22cc517bc
+      - c88016fefa60a266694b55055b8747b7
+      - 7c284d86e6d9cf2e4b57fa57df37c412
+      - f8f81caac0404548ec26896104013e65
+      - 1c129870894f42e7b467c54797859b54
+      - ecaa5067bec4d229ad5be5a356c3a9b9
+  mode: single
+- id: '1710690266540'
+  alias: 'Technik: Pflanzenleuchte anschalten'
+  description: ''
+  triggers:
+  - at: 09:00:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.technik_anzuchtzeit
+    state: 'on'
+  actions:
+  - type: turn_on
+    device_id: 42597e0b4251705fab1a1f2f81dcca9d
+    entity_id: 6350cdaf8e175eae58eb29c12279e82e
+    domain: switch
+  mode: single
+- id: '1710690297679'
+  alias: 'Technik: Pflanzenleuchte ausschalten'
+  description: ''
+  triggers:
+  - at: '16:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 42597e0b4251705fab1a1f2f81dcca9d
+    entity_id: 6350cdaf8e175eae58eb29c12279e82e
+    domain: switch
+  mode: single
+- id: '1712078420871'
+  alias: 'Garten: Teichpumpe: Sonne+5C : Einschalten'
+  description: ''
+  triggers:
+  - event: sunrise
+    offset: '3:00:00'
+    trigger: sun
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.gw2000a_outdoor_temperature
+    above: 5
+  actions:
+  - type: turn_on
+    device_id: 79867ad08cdb7bdf3b5f267548188b5a
+    entity_id: 12edb7d1ca31bc20848a1574210035cf
+    domain: switch
+  mode: single
+- id: '1712078501369'
+  alias: 'Garten: Teichpumpe: Sunset-2h: Aus'
+  description: ''
+  triggers:
+  - event: sunset
+    offset: '-2:00:00'
+    trigger: sun
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 79867ad08cdb7bdf3b5f267548188b5a
+    entity_id: 12edb7d1ca31bc20848a1574210035cf
+    domain: switch
+  mode: single
+- id: '1712078979913'
+  alias: 'Garten: Automation Teich ausschalten wenn Button'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.garten_teich
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition: []
+  action:
+  - service: automation.turn_off
+    metadata: {}
+    data:
+      stop_actions: true
+    target:
+      entity_id: automation.gasrten_teichpumpe_sonne_5c_einschalten
+  - service: automation.trigger
+    metadata: {}
+    data:
+      skip_condition: true
+    target:
+      entity_id: automation.garten_teichpumpe_sunset_2h_aus
+  mode: single
+- id: '1712079053872'
+  alias: 'Garten: Teich automation einschalten'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.garten_teich
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition: []
+  action:
+  - service: automation.turn_on
+    target:
+      entity_id:
+      - automation.gasrten_teichpumpe_sonne_5c_einschalten
+    data: {}
+  mode: single
+- id: '1712991264324'
+  alias: 'Rasen: Wasser aus'
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - service: ifttt.trigger
+    data:
+      event: rasenwasseraus
+  mode: restart
+- id: '1712993056197'
+  alias: G
+  description: ''
+  use_blueprint:
+    path: damru/ikea-rodret_E2201_ZHA-Z2M_control-anything.yaml
+    input:
+      remote_device: dcebea70a3c198a097fbbd2774e464f6
+      on_press_action:
+      - service: script.rasen_oben_wasser_an
+        metadata: {}
+        data: {}
+      off_press_action:
+      - service: script.rasen_oben_wasser_aus
+        metadata: {}
+        data: {}
+- id: '1713387296938'
+  alias: 'Wohnzimmer: Kaffee aus: 16:00'
+  description: ''
+  triggers:
+  - at: '16:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 28a353b0dc7f55548d8f10496daab454
+    entity_id: 497c719329607906ae2fc8d000d65ed9
+    domain: switch
+  mode: single
+- id: '1713762664184'
+  alias: 'Garten: Scene Beleuchtung: Sonnenuntergang +90m'
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: '-10'
+  condition: []
+  action:
+  - service: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.garten_party
+  - delay:
+      hours: 1
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - service: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.garten_licht_aus
+  mode: single
+- id: '1716303278966'
+  alias: Ulanzi:Show Temp outside
+  description: ''
+  use_blueprint:
+    path: ehmtxv2/EHMTX_extended_state.yaml
+    input:
+      ehmtx_device: 2f20668a2846438eb918290f863f7d0f
+      trigger_sensor:
+      - sensor.gw2000a_outdoor_temperature
+      use_friendly: false
+      default_font: true
+      icon_text: true
+      color_rainbow: true
+      default_color:
+      - 255
+      - 61
+      - 61
+      icon_name: temperature
+- id: '1716801892309'
+  alias: 'Ulanzi: Strompreis Indikater'
+  description: ''
+  use_blueprint:
+    path: ehmtxv2/EHMTX_easy_state.yaml
+    input:
+      use_colors: true
+      low_value: 0.25
+      high_value: 0.35
+      ehmtx_device: 2f20668a2846438eb918290f863f7d0f
+      trigger_sensor:
+      - sensor.gorkel_electricity_price
+      icon_name: lightbulb
+- id: '1720791349159'
+  alias: 'Eingang: Gorkel Lock: Abschliessen um 23:15'
+  description: ''
+  triggers:
+  - at: '23:15:00'
+    trigger: time
+  conditions:
+  - condition: device
+    device_id: 47236d46ba4d8515fb0847c1caef4b1c
+    domain: lock
+    entity_id: d2f1e8b4d5744abefce73d494eb344d2
+    type: is_unlocked
+  actions:
+  - action: lock.lock
+    metadata: {}
+    target:
+      device_id: 47236d46ba4d8515fb0847c1caef4b1c
+    data: {}
+  mode: single
+- id: '1725117962451'
+  alias: Christian Kirschniak Home Notification
+  description: ''
+  trigger:
+  - platform: zone
+    entity_id: person.christian_kirschniak
+    zone: zone.home
+    event: enter
+  condition: []
+  action:
+  - action: notify.notify
+    metadata: {}
+    data:
+      message: Christian Kirschniak home
+      title: Christian Kirschniak home
+  mode: single
+- id: '1726408164428'
+  alias: Toilette EG - Anwesenheitssensor Licht
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: a8dd98d8602fd4aceaddffb87456c60b
+    entity_id: d01a1f8ea077cf6ede25ce212293b52c
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: sun
+        before: sunrise
+        after: sunset
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 35
+        target:
+          device_id: b55472d88be5835e25dc46e3a9a200e1
+    - conditions:
+      - condition: sun
+        before: sunset
+        after: sunrise
+      - condition: state
+        entity_id: sensor.toilette_eg_anwesenheitssensor_sonoff_illumination
+        state: dim
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 75
+        target:
+          device_id: b55472d88be5835e25dc46e3a9a200e1
+  - if:
+    - condition: state
+      entity_id: cover.toilette_eg_shutter
+      state: closed
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data:
+        brightness_pct: 35
+      target:
+        device_id: b55472d88be5835e25dc46e3a9a200e1
+  mode: single
+- id: '1726408611719'
+  alias: 'Toilette EG: Anwesenheit Licht aus'
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: a8dd98d8602fd4aceaddffb87456c60b
+    entity_id: d01a1f8ea077cf6ede25ce212293b52c
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  conditions: []
+  actions:
+  - action: light.turn_off
+    data:
+      transition: 5
+    target:
+      device_id: b55472d88be5835e25dc46e3a9a200e1
+  mode: single
+- id: '1726410010582'
+  alias: 'Homeoffice: Licht bei Belegung und Lux <250'
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: 64257f13be14b9828c20103126ce8c44
+    entity_id: b467e0103e72b34376502bba9ce0b8c3
+    domain: sensor
+    trigger: device
+    below: 130
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 25
+  conditions:
+  - type: is_present
+    condition: device
+    device_id: 204ac042566eeceb029902f6a2ccebc2
+    entity_id: f53125dc9afff2871505bf21fcf18165
+    domain: binary_sensor
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.homeoffice_arbeitsbeleuchtung_nach_17_00
+    data: {}
+  mode: single
+- id: '1727003952254'
+  alias: 'Eingang: Schloss öffnen bei Dunkelheit: Licht an'
+  description: ''
+  triggers:
+  - trigger: lock.opened
+    target:
+      device_id: 47236d46ba4d8515fb0847c1caef4b1c
+    options:
+      behavior: any
+  conditions:
+  - condition: sun
+    before: sunrise
+    after: sunset
+    after_offset: '1:00'
+    before_offset: '-1:00'
+  actions:
+  - type: turn_on
+    device_id: 8baa017c5fce9840d661d31ecccdbf5a
+    entity_id: 7bc0f92524c6b21fa5bb248fc3b4f05e
+    domain: switch
+  mode: single
+- id: '1727014067710'
+  alias: 'Garten: Mower: Luba gleich fertig'
+  description: ''
+  triggers:
+  - type: value
+    device_id: da7c6ce21de05f7a8125fa31226cbdc1
+    entity_id: a78841b687d13e3a95e314a13c34067b
+    domain: sensor
+    above: 98
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: device
+  conditions: []
+  actions:
+  - device_id: f744058481d56d356770555151af1d4f
+    domain: mobile_app
+    type: notify
+    message: Luba ist gleich fertig
+    title: Luba ist gleich fertig
+  mode: single
+- id: '1727014469379'
+  alias: 'Mower: Fertig mit Mähen - iPHone 15'
+  description: ''
+  triggers:
+  - type: value
+    device_id: da7c6ce21de05f7a8125fa31226cbdc1
+    entity_id: a78841b687d13e3a95e314a13c34067b
+    domain: sensor
+    above: 98
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 20
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.send_message
+    metadata: {}
+    data:
+      message: Luba hat das Mähen beendet
+    target:
+      device_id: 9aa05a31de5830b349072fe54806f32a
+  mode: single
+- id: '1728230861328'
+  alias: 'Garten: Wasserstand: Teich unter 75 Nachricht'
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.wasserstand
+    below: 750
+  conditions: []
+  actions:
+  - device_id: f744058481d56d356770555151af1d4f
+    domain: mobile_app
+    type: notify
+    message: Wasserstand Teich unter 75cm
+    title: Wasserstand Teich unter 75cm
+  mode: single
+- id: '1729438559938'
+  alias: USV Homeoffice Battery Test
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.selbsttest_usv
+  conditions: []
+  actions:
+  - type: test_battery_start_quick
+    device_id: 79cae15486e1f67599a61a739c4a22b9
+    domain: nut
+  mode: single
+- id: '1731245731475'
+  alias: 'Technik: Shelly Strom gleich Strom Licht hinten ein'
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 3b2fe1b8a1d0b086f7712f17b99bae68
+    entity_id: eef79ca41c4373a1205847d3d872675e
+    domain: switch
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: f23046ade895bf03108b8f63607b5635
+    entity_id: 728185223b2379b5f7c5cb9223f935ce
+    domain: switch
+  mode: single
+- id: '1731245774841'
+  alias: 'Technik: Shelly aus gleich Licht hinten aus'
+  description: ''
+  triggers:
+  - type: turned_off
+    device_id: 3b2fe1b8a1d0b086f7712f17b99bae68
+    entity_id: eef79ca41c4373a1205847d3d872675e
+    domain: switch
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: f23046ade895bf03108b8f63607b5635
+    entity_id: 728185223b2379b5f7c5cb9223f935ce
+    domain: switch
+  mode: single
+- id: '1731256397629'
+  alias: Homeoffice - Anwesenheit - LIght on
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 204ac042566eeceb029902f6a2ccebc2
+    entity_id: f53125dc9afff2871505bf21fcf18165
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - alias: Homeoffice. Lightsensor is <250
+    condition: and
+    conditions:
+    - type: is_illuminance
+      condition: device
+      device_id: 64257f13be14b9828c20103126ce8c44
+      entity_id: b467e0103e72b34376502bba9ce0b8c3
+      domain: sensor
+      below: 150
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      label_id: homeoffice_light
+  mode: single
+- id: '1731256670004'
+  alias: 'Wohnzimmer: Frame on: Rears und Sub on'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.smart_frame_tv
+    to: 'on'
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: 60fd10471abb1fe6eb290c2443ca9927
+    entity_id: 54c8aad6e7017c83d285c770cd15e9b5
+    domain: switch
+  mode: single
+- id: '1731257204700'
+  alias: 'Wohnzimmer: Frame TV off - Rears und Sub off'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.smart_frame_tv
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 3
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 60fd10471abb1fe6eb290c2443ca9927
+    entity_id: 54c8aad6e7017c83d285c770cd15e9b5
+    domain: switch
+  mode: single
+- id: '1731745180163'
+  alias: Toilette UG Beleuchtung bei Belegung
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 2e787377da4ab7f8953f890eb1306d12
+    entity_id: e9a5be2aab5253fc6b72ebef39f34ce4
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 80
+    target:
+      device_id: 9811403729746ea38eddb97c1ba0f62e
+  mode: single
+- id: '1731745256912'
+  alias: 'Toilette UG: Licht aus bei Abwesenheit 2m'
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: 2e787377da4ab7f8953f890eb1306d12
+    entity_id: e9a5be2aab5253fc6b72ebef39f34ce4
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  conditions: []
+  actions:
+  - action: light.turn_off
+    data:
+      transition: 5
+    target:
+      device_id: 9811403729746ea38eddb97c1ba0f62e
+  mode: single
+- id: '1731791721647'
+  alias: 'Abstellraum: Licht an wenn offen'
+  description: ''
+  triggers:
+  - type: opened
+    device_id: b5bc89b7308d58e67a548fc3e3ff949a
+    entity_id: 5066223643927ac64d2d279e19651491
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+  conditions:
+  - condition: light.is_off
+    target:
+      entity_id: light.hue_tento_white_panel_1
+    options:
+      behavior: any
+  actions:
+  - type: turn_on
+    device_id: 85d47d9016aea98c17916e9ce19b301d
+    entity_id: f15da58d9ed74236abb696e391e6f6c2
+    domain: light
+  mode: single
+- id: '1731791784432'
+  alias: 'Abstellraum: Tür schliessen: Licht abschalten'
+  description: ''
+  triggers:
+  - type: not_opened
+    device_id: b5bc89b7308d58e67a548fc3e3ff949a
+    entity_id: 5066223643927ac64d2d279e19651491
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 85d47d9016aea98c17916e9ce19b301d
+    entity_id: f15da58d9ed74236abb696e391e6f6c2
+    domain: light
+  mode: single
+- id: '1732460518240'
+  alias: Fire Tablets  - Start URL Laden um 11:00
+  description: ''
+  triggers:
+  - trigger: time
+    at: '11:00:00'
+  conditions: []
+  actions:
+  - device_id: 4d626d39a381210c84f6d26a449ade36
+    domain: button
+    entity_id: a84dc9a5e1321a81dd748bba92178791
+    type: press
+  - device_id: 52efb5da30cf7e53efe42ded0dae5ff9
+    domain: button
+    entity_id: 55c6cc094dd80bbadf97d0c70c37228e
+    type: press
+  - device_id: 784d1ddc9930d344ece42febfb17b9c3
+    domain: button
+    entity_id: 21421f696b942c67e3cd348dfc1f457c
+    type: press
+  mode: single
+- id: '1733069437394'
+  alias: 'Technik: Anwesenheit - Licht an'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 8f4730aa22172001e36b908980f92455
+    entity_id: 99f58c289bfa9f4bd51bfc4de1974ab1
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  conditions:
+  - condition: time
+    after: 08:00:00
+    before: '21:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  actions:
+  - type: turn_on
+    device_id: 3b2fe1b8a1d0b086f7712f17b99bae68
+    entity_id: eef79ca41c4373a1205847d3d872675e
+    domain: switch
+  mode: single
+- id: '1733069470549'
+  alias: 'Technik: Anwesenheit off - Licht aus'
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: 8f4730aa22172001e36b908980f92455
+    entity_id: 99f58c289bfa9f4bd51bfc4de1974ab1
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 3b2fe1b8a1d0b086f7712f17b99bae68
+    entity_id: eef79ca41c4373a1205847d3d872675e
+    domain: switch
+  mode: single
+- id: '1733585027769'
+  alias: 'Keller: Bewegung: Licht an'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: f8d17dbf93ea597e9f15a67dabd9a4fd
+    entity_id: 8c27dafe779421d649c65c4e7db5e955
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: c3acbf2268211d4a35c9a6a8d3bc1f41
+    entity_id: bd33fa935088d756d40aed398066c27f
+    domain: switch
+  mode: single
+- id: '1733585067170'
+  alias: 'Keller: Keine Bewegung 5m: Licht aus'
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: f8d17dbf93ea597e9f15a67dabd9a4fd
+    entity_id: 8c27dafe779421d649c65c4e7db5e955
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: c3acbf2268211d4a35c9a6a8d3bc1f41
+    entity_id: bd33fa935088d756d40aed398066c27f
+    domain: switch
+  mode: single
+- id: '1734175319938'
+  alias: 'Atelier: Licht aus 23:00'
+  description: ''
+  triggers:
+  - trigger: time
+    at: '23:00:00'
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - 536425684562dc3ec476103452c9a662
+      - e86b76c8e9c64b2291a7e2002a5a2cb4
+  mode: single
+- id: '1736683054297'
+  alias: Atelier Bewegung hinten Licht
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: a300ffb7fa3691b302af1e3a59d6a979
+    entity_id: ec33bb627bb9ba9acaf3071b0c66c64a
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: e86b76c8e9c64b2291a7e2002a5a2cb4
+    entity_id: 76bf42f8df167e8543e51cedeab0f2bc
+    domain: light
+  mode: single
+- id: '1736684210435'
+  alias: 'Atelier: Hauptlicht aus - Licht hinten aus'
+  description: ''
+  triggers:
+  - type: turned_off
+    device_id: 536425684562dc3ec476103452c9a662
+    entity_id: 034944e421a1d1f6d88eb467ea5c8988
+    domain: light
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: e86b76c8e9c64b2291a7e2002a5a2cb4
+    entity_id: 76bf42f8df167e8543e51cedeab0f2bc
+    domain: light
+  mode: single
+- id: '1736699650598'
+  alias: 'Bad UG: Abschalten Licht 2 Minuten nach Raum Verlassen'
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: a7439b80281e3aa594c9aeb95f486316
+    entity_id: fd856c3fb3ec0358dbc98705969ff253
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  conditions: []
+  actions:
+  - action: light.turn_off
+    data:
+      transition: 5
+    target:
+      device_id: 3397960580e76111a4a261dbe62422cb
+  mode: single
+- id: '1736699729546'
+  alias: 'Bad UG: Licht an bei Belegung'
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: a7439b80281e3aa594c9aeb95f486316
+    entity_id: fd856c3fb3ec0358dbc98705969ff253
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 75
+    target:
+      device_id: 3397960580e76111a4a261dbe62422cb
+  mode: single
+- id: '1737140708810'
+  alias: 'Eingang: Recognize what is happening '
+  description: ''
+  use_blueprint:
+    path: valentinfrlch/event_summary.yaml
+    input:
+      mode: Frigate
+      camera_entities:
+      - camera.reolink_eingang_flussig
+      provider: 01JHTT8ZYR59313NHP1862Y4VW
+      notify_device:
+      - f744058481d56d356770555151af1d4f
+      - a519f384f321cbea3ba25ddd3b78fbd1
+      remember: true
+      motion_sensors:
+      - binary_sensor.reolink_eingang_bewegung_2
+      - binary_sensor.reolink_eingang_person_2
+      target_width: 1280
+      detail: low
+      object_type: []
+      cooldown: 2
+      duration: 7
+      input_mode: Camera
+      preview_mode: Snapshot
+- id: '1737884131633'
+  alias: Update Unavailable Entities Group
+  description: Update unavailable entities group.
+  triggers:
+  - trigger: homeassistant
+    id: startup
+    event: start
+  - trigger: event
+    event_type: call_service
+    event_data:
+      domain: group
+      service: reload
+  - trigger: time_pattern
+    hours: /1
+  conditions: []
+  actions:
+  - action: group.set
+    data:
+      object_id: unavailable_entities
+      entities: "{{ states\n    | rejectattr('domain', 'in', ['button', 'conversation',
+        'event', 'group', 'image',\n      'input_button', 'input_text', 'remote',
+        'tts', 'scene', 'stt'])\n    | rejectattr('entity_id', 'in', state_attr('group.ignored_entities',
+        'entity_id'))\n    | rejectattr('entity_id', 'eq', 'group.unavailable_entities')\n
+        \   | selectattr('state', 'in', ['unknown', 'unavailable'])\n    | map(attribute='entity_id')
+        | list | sort }}\n"
+  mode: single
+  max_exceeded: silent
+- id: '1737902306056'
+  alias: Log Frigate Events
+  description: ''
+  triggers:
+  - topic: frigate/events
+    trigger: mqtt
+  conditions: []
+  actions:
+  - data:
+      title: Frigate Event
+      message: 'Event: {{ trigger.payload_json[''after''][''label''] }} detected at
+        {{ trigger.payload_json[''after''][''camera''] }}'
+    action: notify.persistent_notification
+  - data:
+      duration: 30
+      lookback: 5
+    action: camera.record
+    target:
+      device_id: efbaf59940a99396e24359dd3f79be3a
+- id: '1737974730113'
+  alias: 'Homeoffice: Printer Turn off nach 50m'
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: f8249bdaee1838a0e44e14c2a2a3f93c
+    entity_id: 6ded9b58e18867f271531e7938279a2d
+    domain: switch
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 50
+      seconds: 0
+  - type: turn_off
+    device_id: f8249bdaee1838a0e44e14c2a2a3f93c
+    entity_id: 6ded9b58e18867f271531e7938279a2d
+    domain: switch
+  mode: single
+- id: '1738265031974'
+  alias: 'Schlafzimmer: Schrank öffnen: Licht an 10m'
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 2ae54b241184c9ddbec335569481f473
+    entity_id: 0ecc54bd86f8698386e5205917b175e3
+    domain: binary_sensor
+    metadata:
+      secondary: false
+    trigger: device
+  - type: opened
+    device_id: f987fd702edbb385e3a17b957175e646
+    entity_id: e1b765b03a211a1ef71fe9814596bdcf
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: time
+    after: 06:30:00
+    before: '23:00:00'
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 90
+    target:
+      entity_id: light.schlafzimmer_schranke
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.schlafzimmer_schranke
+  mode: restart
+- id: '1738265083479'
+  alias: 'Schlafzimmer: Schrank zu: Licht aus '
+  description: ''
+  triggers:
+  - type: not_opened
+    device_id: 2ae54b241184c9ddbec335569481f473
+    entity_id: 0ecc54bd86f8698386e5205917b175e3
+    domain: binary_sensor
+    trigger: device
+  - type: not_opened
+    device_id: f987fd702edbb385e3a17b957175e646
+    entity_id: e1b765b03a211a1ef71fe9814596bdcf
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.schlafzimmer_schranke
+  mode: single
+- id: '1739095079040'
+  alias: 'Homeoffice: Licht > 150 LX: Main Licht aus'
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: 64257f13be14b9828c20103126ce8c44
+    entity_id: b467e0103e72b34376502bba9ce0b8c3
+    domain: sensor
+    trigger: device
+    above: 150
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - bf4250da086ce5ce773e65c7813c0ed8
+      - 8fdde933d1ba53ffaf7a3a8b5d7c47f4
+      - 92bfc41fa0a8132b98a7b0591a0bba22
+      - 8193e639db6cc0608fbc3253a58f14bb
+      - 24856418ee4ddf5a5f9cea15c2599bf0
+  mode: single
+- id: '1739715900433'
+  alias: 'Homeoffice: Elgato Videobeleuchtung aus 22:00'
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - cd147063c79231802222d51558d2b9ae
+  mode: single
+- id: '1740072732475'
+  alias: 'Eingang: Post: geleert'
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 897ed2ce27e27e609926725fcb11e391
+    entity_id: 6180d87fb7f3f3e4d3c7928eff08e81b
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: automation.turn_off
+    metadata: {}
+    data:
+      stop_actions: true
+    target:
+      entity_id: automation.eingang_snapshot_briefkasten
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.post
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: automation.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: automation.eingang_snapshot_briefkasten
+  mode: single
+- id: '1740082484218'
+  alias: 'Eingang: Snapshot Briefkasten'
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.eingang_briefkasten_vibrationssensor_tuya_vibration
+    from: 'off'
+    to: 'on'
+    trigger: state
+  actions:
+  - target:
+      device_id:
+      - 8dcedf9ae7c689327960cbd66d5eb648
+    data:
+      filename: /config/www/snapshots/postbox.jpg
+    action: camera.snapshot
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.post
+  - delay: 00:00:02
+  - action: notify.persistent_notification
+    metadata: {}
+    data:
+      message: POST IST DA
+      title: Vibration meldet Post ist da
+  mode: single
+- id: '1740306161474'
+  alias: 'Eingang: Tür öffnen: Licht an bei Sonnenuntergang'
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 22c7a01541b67e4a002bc468badee829
+    entity_id: 84324bc6ff6c3baaca9c7bf6a78194fb
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  conditions:
+  - condition: sun
+    after: sunset
+    before: sunrise
+    after_offset: '-1'
+    before_offset: '+1'
+  actions:
+  - type: turn_on
+    device_id: 8baa017c5fce9840d661d31ecccdbf5a
+    entity_id: 7bc0f92524c6b21fa5bb248fc3b4f05e
+    domain: switch
+  mode: single
+- id: '1740312029840'
+  alias: 'Eingang: Last Entry'
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 22c7a01541b67e4a002bc468badee829
+    entity_id: 84324bc6ff6c3baaca9c7bf6a78194fb
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  conditions: []
+  actions:
+  - data:
+      filename: /config/www/snapshots/lastentry.jpg
+    action: camera.snapshot
+    target:
+      device_id:
+      - 8dcedf9ae7c689327960cbd66d5eb648
+  - delay: 00:00:02
+  - target:
+      entity_id: camera.lastentry_camera
+    action: homeassistant.update_entity
+    data: {}
+  - action: timer.start
+    metadata: {}
+    data: {}
+    target:
+      entity_id: timer.timer_10_minute
+  mode: single
+- id: '1741419227136'
+  alias: 'Alarm: Küche Wasser Waschbecken'
+  description: ''
+  triggers:
+  - type: moist
+    device_id: f9a400547ba5225b035fb4d0cd97ee72
+    entity_id: a6b77981da0c24e284cd9c4611690ab4
+    domain: binary_sensor
+    metadata:
+      secondary: false
+    trigger: device
+  conditions: []
+  actions:
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: 'ALARM: Wasser unter dem Küchen-Waschbecken'
+  - action: notify.send_message
+    metadata: {}
+    data:
+      message: 'ALARM: Wasser unter dem Küchen-Waschbecken'
+    target:
+      device_id:
+      - 784d1ddc9930d344ece42febfb17b9c3
+      - 4d626d39a381210c84f6d26a449ade36
+  mode: single
+- id: '1744833059887'
+  alias: 'Auto: Publish Macan SoC to EVCC'
+  description: Publishes the SoC from Porsche Connect to MQTT for EVCC
+  triggers:
+  - entity_id: sensor.state_of_charge
+    trigger: state
+  actions:
+  - data:
+      topic: homeassistant/vehicle/macan/soc
+      payload: '{{ states(''sensor.state_of_charge'') }}'
+      retain: true
+    action: mqtt.publish
+  mode: single
+- id: '1744833214914'
+  alias: Periodic Macan SoC to EVCC
+  description: Publishes Porsche Macan SoC to EVCC every 10 minutes
+  triggers:
+  - minutes: /10
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - data:
+      topic: homeassistant/vehicle/macan/soc
+      payload: '{{ states(''sensor.state_of_charge'') }}'
+      retain: true
+    action: mqtt.publish
+  mode: single
+- id: '1745761578619'
+  alias: 'Garten: Luba >99% Geladen - Nachricht'
+  description: ''
+  triggers:
+  - type: battery_level
+    device_id: da7c6ce21de05f7a8125fa31226cbdc1
+    entity_id: 6cb4500f6ad4e6ef3741734325bd0209
+    domain: sensor
+    trigger: device
+    above: 99
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - device_id: f744058481d56d356770555151af1d4f
+    domain: mobile_app
+    type: notify
+    message: Luba >99% geladen
+  mode: single
+- id: '1746859536238'
+  alias: Warmwasser Freigabe bei PV-Erzeugung über 2.5 kW
+  description: 'Aktiviert die Warmwasserbereitung über Luxtronik doppelt, wenn PV-Erzeugung
+    > 2.5 kW ist (08:30–17:00 Uhr), deaktiviert bei < 1.0 kW – jeweils mit Wiederholung.
+
+    '
+  triggers:
+  - entity_id: sensor.solarnet_power_photovoltaics
+    above: 2.5
+    trigger: numeric_state
+  - entity_id: sensor.solarnet_power_photovoltaics
+    below: 1
+    trigger: numeric_state
+  conditions:
+  - condition: time
+    after: 08:30:00
+    before: '17:00:00'
+    enabled: false
+  - condition: numeric_state
+    entity_id: sensor.energy_production_today
+    above: 20
+    enabled: false
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.solarnet_power_photovoltaics
+        above: 2.5
+      sequence:
+      - target:
+          entity_id: switch.luxtronik_230820_0337_domestic_water
+        action: switch.turn_on
+        data: {}
+      - delay: 00:00:03
+      - target:
+          entity_id: switch.luxtronik_230820_0337_domestic_water
+        action: switch.turn_on
+        data: {}
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.solarnet_power_photovoltaics
+        below: 1
+      - condition: numeric_state
+        entity_id: sensor.energy_production_tomorrow
+        above: 20
+      sequence:
+      - target:
+          entity_id: switch.luxtronik_230820_0337_domestic_water
+        action: switch.turn_off
+        data: {}
+      - delay: 00:00:03
+      - target:
+          entity_id: switch.luxtronik_230820_0337_domestic_water
+        action: switch.turn_off
+        data: {}
+  mode: single
+- id: '1746977497146'
+  alias: EVCC Fahrzeug automatisch wählen (Macan / Mini)
+  description: Sendet das aktuell ladende Fahrzeug an EVCC via MQTT
+  triggers:
+  - seconds: /30
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.charging_status
+        state: charging
+      - condition: state
+        entity_id: device_tracker.porscheconnect_wp1zzzxa6sl077839
+        state: home
+      sequence:
+      - data:
+          topic: homeassistant/vehicle/selected_vehicle
+          payload: macan
+          retain: true
+        action: mqtt.publish
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.cooper_se_ladestatus
+        state: 'on'
+      - condition: state
+        entity_id: device_tracker.cooper_se
+        state: home
+      sequence:
+      - data:
+          topic: homeassistant/vehicle/selected_vehicle
+          payload: cooper
+          retain: true
+        action: mqtt.publish
+  - data:
+      topic: homeassistant/vehicle/selected_vehicle
+    action: mqtt.publish
+    enabled: false
+- id: '1752398587023'
+  alias: 'Sonne: Shades Homeoffice schliessen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_front_kimbernstrasse
+    to: 'on'
+    from: 'off'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 25
+    target:
+      entity_id:
+      - cover.homeoffice_left_shutter
+      - cover.homeoffice_right_shutter
+  mode: single
+- id: '1752398671727'
+  alias: 'Sonne: Shades Homeoffice öffnen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_front_kimbernstrasse
+    to: 'off'
+    from: 'on'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 100
+    target:
+      entity_id:
+      - cover.homeoffice_left_shutter
+      - cover.homeoffice_right_shutter
+  mode: single
+- id: '1752398893939'
+  alias: 'Sonne: Shades Wohnzimmer schliessen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_front_kimbernstrasse
+    to: 'on'
+    from: 'off'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 40
+    target:
+      entity_id:
+      - cover.wohnzimmer_left_shutter
+      - cover.wohnzimmer_right_shutter
+  mode: single
+- id: '1752398948481'
+  alias: 'Sonne: Shades Wohnzimmer öffnen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_front_kimbernstrasse
+    to: 'off'
+    from: 'on'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 100
+    target:
+      entity_id:
+      - cover.wohnzimmer_left_shutter
+      - cover.wohnzimmer_right_shutter
+  mode: single
+- id: '1752399125272'
+  alias: 'Sonne: Shades Küche und Toilette schliessen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_seite_kimbernstrasse
+    to: 'on'
+    from: 'off'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 0
+    target:
+      entity_id:
+      - cover.kuche_links
+      - cover.kuche_rechts
+      - cover.toilette_eg_shutter
+  mode: single
+- id: '1752399185655'
+  alias: 'Sonne: Shades Küche und Toilette öffnen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_seite_kimbernstrasse
+    to: 'off'
+    from: 'on'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 100
+    target:
+      entity_id:
+      - cover.kuche_links
+      - cover.kuche_rechts
+      - cover.toilette_eg_shutter
+  mode: single
+- id: '1752399383183'
+  alias: 'Sonne: Shades Schlafzimmer schliessen'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.sonne_ruckseite_kimbernstrasse
+    to: 'on'
+    from: 'off'
+  conditions: []
+  actions:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 0
+    target:
+      entity_id: cover.schlafzimmer_shutter
+  mode: single
+- id: '1752956345567'
+  alias: Sonnensteuerung einschalten bei >24°C
+  description: ''
+  triggers:
+  - trigger: time
+    at: 04:00:00
+  conditions: []
+  actions:
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.max_temperature_heute
+      above: 24
+    then:
+    - action: automation.turn_on
+      metadata: {}
+      data: {}
+      target:
+        label_id: sonnensteuerung
+    else:
+    - action: automation.turn_off
+      metadata: {}
+      data:
+        stop_actions: true
+      target:
+        label_id: sonnensteuerung
+  mode: single
+- id: '1752957628805'
+  alias: Familie verlässt Haus
+  description: Kamera innen einschalten
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.familie_ist_zu_hause
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 8cd46a4a4a13badeb664a17c2186b3f4
+    entity_id: d3ce8a373485561773b8285b16d97323
+    domain: switch
+  mode: single
+- id: '1752994200710'
+  alias: Familie kommt nach Hause
+  description: Kamera innen ausschalten
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.familie_ist_zu_hause
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 3
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: 8cd46a4a4a13badeb664a17c2186b3f4
+    entity_id: d3ce8a373485561773b8285b16d97323
+    domain: switch
+  mode: single
+- id: '1753103966055'
+  alias: Klimaanlage aus wenn Raumtemperatur Schlaftzimmer <23°
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.eight_sleep_room_temperature
+    below: 23
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.gw2000a_outdoor_temperature
+    below: 24
+  actions:
+  - data: {}
+    action: climate.turn_off
+    target:
+      device_id: aae12036b0ec43ae76f09680a724e375
+  mode: single
+- id: '1757876611042'
+  alias: 'Kochbox: Ausschalten Hauptsstrom nach 90m Kochvorgang beendet'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.kochbox_grill_state
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    to:
+    - sleeping
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 3416360d1c5003d87c456a941d9a7d37
+    entity_id: 198b61c69fc678e64059195c8598a979
+    domain: switch
+  mode: single
+- id: cpu_high_80_for_1h
+  alias: CPU >80% seit 1h -> Alarm
+  description: ''
+  triggers:
+  - entity_id: sensor.processor_use
+    above: 80
+    for: 01:00:00
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      title: Home Assistant CPU hoch
+      message: 'CPU-Auslastung seit ≥60 Min. >80 %. Aktuell: {{ states(''sensor.processor_use'')
+        }} %.'
+    action: notify.notify
+  - data:
+      title: CPU-Alarm
+      message: Die CPU-Auslastung liegt seit mindestens 60 Minuten über 80 %.
+    action: persistent_notification.create
+  mode: single
+- id: '1764349280779'
+  alias: Sauna heiss Benachrichtigung
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.bad_sensor_temperatur_sauna_temperature
+    above: 75
+  conditions: []
+  actions:
+  - action: notify.send_message
+    metadata: {}
+    data:
+      message: Sauna ist Warm
+    target:
+      floor_id: og
+  - action: notify.mobile_app_ck_16_max
+    metadata: {}
+    data:
+      message: Sauna ist warm
+  - action: notify.notify
+    metadata: {}
+    data:
+      message: Sauna ist warm
+  mode: single
+- id: '1764493579287'
+  alias: 'Abstellraum: Kammervakuumierer nach 1h ausschalten'
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 340104cdb198472a1f3990862d3cfe48
+    entity_id: fffbdcf1b600a370d98278f8f87e21fb
+    domain: switch
+    trigger: device
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 340104cdb198472a1f3990862d3cfe48
+    entity_id: fffbdcf1b600a370d98278f8f87e21fb
+    domain: switch
+  mode: single
+- id: '1765119598660'
+  alias: Heizung Profilwechsel
+  description: Steuert alle Thermostate basierend auf dem gewählten Heizprofil
+  triggers:
+  - entity_id: input_select.heizprofil
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.heizprofil
+        state: Bewohnt
+      sequence:
+      - target:
+          entity_id:
+          - climate.wohnzimmer_u_kuche_raumthermostat_bosch
+        data:
+          target_temp_low: '{{ states(''input_number.wohnzimmer_komfort'') | float
+            }}'
+          target_temp_high: '{{ states(''input_number.wohnzimmer_komfort'') | float
+            + 0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.ben_thermostat
+          - climate.paul_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.jungs_komfort'') | float }}'
+          target_temp_high: '{{ states(''input_number.jungs_komfort'') | float + 0.5
+            }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.thermostat_bad_schlafzimmer
+        data:
+          target_temp_low: '{{ states(''input_number.bad_schlafzimmer_komfort'') |
+            float }}'
+          target_temp_high: '{{ states(''input_number.bad_schlafzimmer_komfort'')
+            | float + 0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+        enabled: false
+      - target:
+          entity_id:
+          - climate.flur_ug1_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.flur_komfort'') | float }}'
+          target_temp_high: '{{ states(''input_number.flur_komfort'') | float + 0.5
+            }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.media_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.media_komfort'') | float }}'
+          target_temp_high: '{{ states(''input_number.media_komfort'') | float + 0.5
+            }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.atelier_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.atelier_komfort'') | float }}'
+          target_temp_high: '{{ states(''input_number.atelier_komfort'') | float +
+            0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+    - conditions:
+      - condition: state
+        entity_id: input_select.heizprofil
+        state: Mehrtägig weg
+      sequence:
+      - data:
+          target_temp_low: '{{ states(''input_number.wohnzimmer_abwsend'') | float
+            }}'
+          target_temp_high: '{{ states(''input_number.wohnzimmer_abwsend'') | float
+            + 0.5 }}'
+        action: climate.set_temperature
+        target:
+          entity_id: climate.wohnzimmer_u_kuche_raumthermostat_bosch
+      - target:
+          entity_id:
+          - climate.ben_thermostat
+          - climate.paul_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.jungs_abwesend'') | float }}'
+          target_temp_high: '{{ states(''input_number.jungs_abwesend'') | float +
+            0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.thermostat_bad_schlafzimmer
+        data:
+          target_temp_low: '{{ states(''input_number.bad_schlaftzimmer_abwesend'')
+            | float }}'
+          target_temp_high: '{{ states(''input_number.bad_schlaftzimmer_abwesend'')
+            | float + 0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+        enabled: false
+      - target:
+          entity_id:
+          - climate.flur_ug1_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.flur_abwesend'') | float }}'
+          target_temp_high: '{{ states(''input_number.flur_abwesend'') | float + 0.5
+            }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - target:
+          entity_id:
+          - climate.media_thermostat
+        data:
+          target_temp_low: '{{ states(''input_number.media_abwesend'') | float }}'
+          target_temp_high: '{{ states(''input_number.media_abwesend'') | float +
+            0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+      - data:
+          target_temp_low: '{{ states(''input_number.atelier_abwesend'') | float }}'
+          target_temp_high: '{{ states(''input_number.atelier_abwesend'') | float
+            + 0.5 }}'
+          hvac_mode: heat
+        action: climate.set_temperature
+        target:
+          entity_id: climate.atelier_thermostat
+    - conditions:
+      - condition: state
+        entity_id: input_select.heizprofil
+        state: Urlaub
+      sequence:
+      - data:
+          hvac_mode: heat
+          target_temp_high: 15
+          target_temp_low: 15
+        action: climate.set_temperature
+        target:
+          entity_id: climate.wohnzimmer_u_kuche_raumthermostat_bosch
+  mode: single
+- id: '1765119665651'
+  alias: Heizung Morgen Vorlauf Wochentags
+  description: Startet Heizung um 4 Uhr für warme Räume ab 8 Uhr (Wochentags)
+  triggers:
+  - at: 04:00:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_select.heizprofil
+    state: Bewohnt
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - data:
+      temperature: '{{ states(''input_number.bad_komfort_temperatur'') | float }}'
+    action: climate.set_temperature
+    target:
+      entity_id:
+      - climate.wohnzimmer_u_kuche_raumthermostat_bosch
+      - climate.ben_thermostat
+      - climate.paul_thermostat
+      device_id:
+      - 7a8f627ee666aaf74e7bf71c2ef0366e
+      - b8fe7ed1cd4b1fa9b574943a002d2cd2
+      - 7bb3accb04defcbf6b50ff60c7cb076d
+      - b6eaf128149350a9d06191c74592ecd2
+  mode: single
+- id: '1765119852221'
+  alias: Heizung Morgen Vorlauf Wochenende
+  description: Startet Heizung später am Wochenende (7 Uhr für 11 Uhr)
+  triggers:
+  - at: 07:00:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_select.heizprofil
+    state: Bewohnt
+  - condition: time
+    weekday:
+    - sat
+    - sun
+  actions:
+  - target:
+      entity_id:
+      - climate.wohnzimmer_u_kuche_raumthermostat_bosch
+      - climate.paul_thermostat
+      - climate.ben_thermostat
+    data:
+      temperature: '{{ states(''input_number.wohnzimmer_komfort_temperatur'') | float
+        }}'
+    action: climate.set_temperature
+  mode: single
+- id: '1765119988990'
+  alias: Heizung Nachtabsenkung
+  description: Senkt Temperatur nachts um 2°C (außer Schlafzimmer)
+  triggers:
+  - at: '22:30:00'
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_select.heizprofil
+    state: Bewohnt
+  actions:
+  - data:
+      temperature: '{{ [states(''input_number.wohnzimmer_abwsend'') | float - 2, 18]
+        | max }}'
+    action: climate.set_temperature
+    target:
+      device_id:
+      - b6eaf128149350a9d06191c74592ecd2
+      - 7a8f627ee666aaf74e7bf71c2ef0366e
+      - b8fe7ed1cd4b1fa9b574943a002d2cd2
+      entity_id:
+      - climate.wohnzimmer_u_kuche_raumthermostat_bosch
+      - climate.paul_thermostat
+      - climate.ben_thermostat
+      - climate.nspanel_thermostat
+  mode: single
+- id: '1765120047552'
+  alias: Heizung Rückkehr Info
+  description: Benachrichtigt über langsames Aufheizen bei Rückkehr
+  triggers:
+  - entity_id: input_select.heizprofil
+    from: Mehrtägig weg
+    to: Bewohnt
+    trigger: state
+  conditions: []
+  actions:
+  - action: notify.mobile_app_ck_16_max
+    metadata: {}
+    data:
+      title: Heizung wird hochgefahren
+      message: Räume erreichen Komforttemperatur in ca. 4-6 Stunden. Fußbodenheizung
+        braucht Zeit!
+  mode: single
+- id: '1765120227228'
+  alias: Heizung Urlaub Info
+  description: Benachrichtigt beim Aktivieren des Urlaub-Modus
+  triggers:
+  - entity_id: input_select.heizprofil
+    to: Urlaub
+    trigger: state
+  conditions: []
+  actions:
+  - action: notify.mobile_app_ck_16_max
+    metadata: {}
+    data:
+      title: Urlaub-Modus aktiviert
+      message: Alle Thermostate auf 15°C. Denk daran rechtzeitig vor Rückkehr auf
+        Bewohnt zu stellen!
+  mode: single
+- id: '1766473426551'
+  alias: 'Heizung: Abwesenheit via Kalender'
+  description: ''
+  triggers:
+  - trigger: calendar
+    entity_id: calendar.heizung
+    event: start
+  - trigger: calendar
+    entity_id: calendar.heizung
+    event: end
+  conditions:
+  - condition: template
+    value_template: '{% set s = (trigger.calendar_event.summary | lower) %} {{ ''abwesend''
+      in s or ''urlaub'' in s }}
+
+      '
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''start'' }}'
+      sequence:
+      - action: input_select.select_option
+        data:
+          option: Mehrtägig weg
+        target:
+          entity_id: input_select.heizprofil
+      - action: notify.mobile_app_ck_16_max
+        metadata: {}
+        data:
+          message: Heizung in Schönaich auf Abwesend geschaltet
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''end'' }}'
+      sequence:
+      - action: input_select.select_option
+        data:
+          option: Bewohnt
+        target:
+          entity_id: input_select.heizprofil
+      - action: notify.mobile_app_ck_16_max
+        metadata: {}
+        data:
+          message: Heizung in Schönaich auf Bewohnt geschaltet
+  mode: queued
+- id: '1769338860021'
+  alias: 'Neustart: Automations'
+  description: ''
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - action: automation.trigger
+    metadata: {}
+    target:
+      entity_id: automation.heizung_profilwechsel
+    data:
+      skip_condition: true
+  mode: single

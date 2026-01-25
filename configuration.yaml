@@ -1,0 +1,689 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+homeassistant:
+  customize:
+    sensor.energyesp32_mt681_zahlerstand_total:
+      unit_of_measurement: kwh
+    sensor.sauna2_ho_indoor_air_quality:
+      unit_of_measurement: ppm
+  packages: !include_dir_named packages
+   
+
+  
+
+default_config:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+# packages: !include_dir_named packages
+
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+
+
+# InfluxDB Connect
+influxdb:
+  api_version: 2
+  host: 192.168.1.16
+  ssl: false
+  port: 8086
+  token: !secret influx_token
+  organization: Gorkel
+  bucket: home_assistant
+
+# Recorder config
+recorder:
+  purge_keep_days: 30
+
+# Storage for Bubble Card Modules
+template:
+  - trigger:
+      - trigger: event
+        event_type: bubble_card_update_modules
+    sensor:
+      - name: "Bubble Card Modules"
+        state: "saved"
+        icon: "mdi:puzzle"
+        attributes:
+          modules: "{{ trigger.event.data.modules }}"
+          last_updated: "{{ trigger.event.data.last_updated }}"
+
+ # Tibber Preise         
+
+  - sensor:
+      - name: "tibber_prices_15m"
+        unique_id: tibber_prices_15m
+        icon: mdi:flash
+        unit_of_measurement: "€/kWh"
+        state: >
+          {{ now() }}   # Dummy state (Apex nutzt nur die attributes)
+        attributes:
+          datetimes: >
+            {% set today = state_attr('sensor.tibber_price_raw','today') %}
+            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
+            {% set all = today + tomorrow %}
+            {{ all | map(attribute='startsAt') | list }}
+          prices: >
+            {% set today = state_attr('sensor.tibber_price_raw','today') %}
+            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
+            {% set all = today + tomorrow %}
+            {{ all | map(attribute='total') | list }}        
+                  
+  # Proxmox Integration
+
+proxmoxve:
+  - host: 192.168.1.8
+    username: !secret proxmox_user
+    password: !secret proxmox_pw
+    verify_ssl: false
+    realm: pve
+    nodes:
+      - node: pve
+        containers:
+          - 100
+          - 102
+          - 103
+          - 104
+          - 105
+        vms:
+          - 101
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# Input booleans and numbers
+input_boolean:
+  vacation_mode:
+    name: Vacation Mode
+    icon: mdi:beach
+
+input_number:
+  yesterday_rain:
+    name: Yesterday Rain Fall
+    min: 0
+    max: 200
+    unit_of_measurement: "mm"
+    mode: box
+    icon: mdi:water
+  2_days_rain:
+    name: 2 days Before Rain Fall
+    min: 0
+    max: 200
+    unit_of_measurement: "mm"
+    mode: box
+    icon: mdi:water
+
+# MQTT sensor
+mqtt:
+  sensor:
+    - name: "Wasserstand"
+      state_topic: "Wasserstand"
+      unit_of_measurement: "mm"
+
+# Sensors
+sensor:
+  - platform: statistics
+    name: "Rain last day"
+    entity_id: sensor.rain_last_hour
+    state_characteristic: total
+    max_age:
+      hours: 24
+    sampling_size: 24
+    precision: 0
+
+  - platform: statistics
+    name: "Rain last 2 days"
+    entity_id: sensor.rain_last_hour
+    state_characteristic: total
+    max_age:
+      hours: 48
+    sampling_size: 48
+    precision: 0
+
+  - platform: integration
+    source: sensor.battery_power_charging
+    name: "Total Battery Energy Charged"
+    method: left
+
+  - platform: integration
+    source: sensor.battery_power_discharging
+    name: "Total Battery Energy Discharged"
+    method: left
+
+  - platform: integration
+    source: sensor.power_photovoltaics
+    name: "Total Photovoltaics Energy"
+    method: left
+
+  - platform: mqtt_room
+    device_id: "irk:0a97917f8cb8a775565f1300efcebe95"
+    name: "AppleWatch Ultra CK ESPresence"
+    state_topic: "espresense/devices/irk:0a97917f8cb8a775565f1300efcebe95"
+    timeout: 10
+    away_timeout: 120
+
+  - platform: history_stats
+    name: "Vacation Kitchen"
+    entity_id: light.wohnzimmer
+    state: "on"
+    type: count
+    start: >
+      {{ as_timestamp(now()) - (7*86400) }}
+    duration: 00:00:10
+
+  - platform: integration
+    source: sensor.power_consumption
+    method: left
+    name: gesamt_leistung_kwh
+    unit_prefix: k
+    round: 2
+
+  - platform: unifigateway
+    host: 192.168.1.1
+    version: UDMP-unifiOS
+    verify_ssl: false
+    username: !secret unifi_user
+    password: !secret unifi_pw
+    monitored_conditions:
+      - www
+      - wlan
+      - lan
+      - firmware
+
+  ## TiIBBER PRICING
+  # TIBBER
+
+  - platform: rest
+    name: tibber_price_raw
+    resource: https://api.tibber.com/v1-beta/gql
+    method: POST
+    headers:
+      Authorization: !secret tibber_token
+      Content-Type: application/json
+      User-Agent: REST
+    payload: >
+      {
+        "query": "{
+          viewer {
+            homes {
+              currentSubscription {
+                priceInfo {
+                  today {
+                    total
+                    energy
+                    tax
+                    startsAt
+                  }
+                  tomorrow {
+                    total
+                    energy
+                    tax
+                    startsAt
+                  }
+                }
+              }
+            }
+          }
+        }"
+      }    
+    value_template: "{{ value_json.viewer.homes[0].currentSubscription.priceInfo.today[0].total }}"    
+    # payload: '{ "query": "{ viewer { homes { currentSubscription { status priceInfo { current { total } today { total } tomorrow { total } } } } } }" }'
+    # json_attributes_path: "$.data.viewer.homes[0].currentSubscription.priceInfo"
+    json_attributes_path: "viewer.homes[0].currentSubscription.priceInfo"
+    json_attributes:
+      - today
+      - tomorrow
+    value_template: "{{ value_json.data.viewer.homes[0].currentSubscription.priceInfo.current.total | float }}"
+    scan_interval: 900 # Update every 15m
+
+
+# Template sensors - Neue Syntax (empfohlen)
+template:
+  - sensor:
+      # Electricity Max Price
+      - name: "Electricity Max price Gorkel"
+        unique_id: sensor.electricity_max_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','max_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # Electricity Min Price
+      - name: "Electricity Min price Gorkel"
+        unique_id: sensor.electricity_min_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','min_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # Electricity Avg Price
+      - name: "Electricity Avg price Gorkel"
+        unique_id: sensor.electricity_avg_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','avg_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # UNIFI Gateway CPU
+      - name: "CPU"
+        unique_id: sensor.unifi_gateway_cpu
+        state: "{{ states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['cpu'] }}"
+        icon: mdi:cpu-64-bit
+
+      # UNIFI Wired Clients
+      - name: "UDM-Pro Wired Clients"
+        unique_id: sensor.unifi_gateway_wired_clients
+        state: "{{ states.sensor.unifi_gateway_lan.attributes.num_user }}"
+        icon: mdi:lan
+
+      # UNIFI Wireless Clients
+      - name: "UDM-Pro Wireless Clients"
+        unique_id: sensor.unifi_gateway_wireless_clients
+        state: "{{ states.sensor.unifi_gateway_wlan.attributes.num_user }}"
+        icon: mdi:wifi
+
+      # UNIFI Download Speed
+      - name: "UDM-Pro Download"
+        unique_id: sensor.unifi_gateway_www_xput_down
+        state: "{{ states.sensor.unifi_gateway_www.attributes.xput_down }}"
+        unit_of_measurement: Mbps
+        icon: mdi:download
+
+      # UNIFI Speedtest Ping
+      - name: "UDM-Pro Ping"
+        unique_id: sensor.unifi_gateway_www_speedtest_ping
+        state: "{{ states.sensor.unifi_gateway_www.attributes.speedtest_ping }}"
+        unit_of_measurement: ms
+        icon: mdi:run-fast
+
+      # UNIFI Uptime
+      - name: "UDM-Pro Uptime"
+        unique_id: sensor.unifi_uptime_templated
+        state: >-
+          {% set time = (states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['uptime'] | int) | int %}
+          {% set minutes = ((time % 3600) / 60) | int %}
+          {% set hours = ((time % 86400) / 3600) | int %}
+          {% set days = (time / 86400) | int %}
+
+          {%- if time < 60 -%}
+            Less than a minute
+          {%- else -%}
+            {%- if days > 0 -%}
+              {{ days }}d
+            {%- endif -%}
+            {%- if hours > 0 -%}
+              {%- if days > 0 -%}
+                {{ ' ' }}
+              {%- endif -%}
+              {{ hours }}h
+            {%- endif -%}
+            {%- if minutes > 0 -%}
+              {%- if days > 0 or hours > 0 -%}
+                {{ ' ' }}
+              {%- endif -%}
+              {{ minutes }}m
+            {%- endif -%}
+          {%- endif -%}
+        icon: mdi:av-timer
+
+      # EPEX Spot Price ct/kWh
+      - name: "Aktueller Strompreis"
+        unique_id: sensor.epex_spot_price_ct_per_kwh
+        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.1) + 1.5) * 1.2 }}"
+        unit_of_measurement: "ct/kWh"
+        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
+
+      # EPEX Spot Price EUR/kWh
+      - name: "Aktueller Strompreis Euro"
+        unique_id: sensor.epex_spot_price_eur_per_kwh
+        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.001) + 0.015) * 1.2 }}"
+        unit_of_measurement: "eur/kWh"
+        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
+
+
+# Utility meter
+
+utility_meter:
+  gesamt_leistung_kwd:
+    source: sensor.gesamt_leistung_kwh
+    cycle: daily
+    name: Gesamt Leistung kwd
+
+# ZHA Zigbee
+# zha:
+#   zigpy_config:
+#     ota:
+#       otau_directory: /config/zigpy_ota
+#       extra_ikea_provider: true
+#       extra_ledvance_provider: true
+#       salus_provider: true
+#       inovelli_provider: true
+#       thirdreality_provider: true
+#     ezsp_policies:
+#       TRUST_CENTER_POLICY: 0x0002 # ALLOW_UNSECURED_REJOINS
+
+# Logger
+logger:
+  default: warning
+
+# KNX
+knx:
+  cover:
+    - name: "Wohnzimmer left shutter"
+      move_long_address: "0/1/0"
+      move_short_address: "0/1/1"
+      travelling_time_down: 65
+      travelling_time_up: 62
+
+    - name: "Wohnzimmer right shutter"
+      move_long_address: "0/1/4"
+      move_short_address: "0/1/5"
+      travelling_time_down: 65
+      travelling_time_up: 62
+
+    - name: "Homeoffice left shutter"
+      move_long_address: "0/1/24"
+      move_short_address: "0/1/25"
+      travelling_time_down: 72
+      travelling_time_up: 72
+
+    - name: "Homeoffice right shutter"
+      move_long_address: "0/1/20"
+      move_short_address: "0/1/21"
+      travelling_time_down: 72
+      travelling_time_up: 72
+
+    - name: "Küche rechts"
+      move_long_address: "0/1/12"
+      move_short_address: "0/1/13"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Küche links"
+      move_long_address: "0/1/8"
+      move_short_address: "0/1/9"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Toilette EG shutter"
+      move_long_address: "0/1/16"
+      move_short_address: "0/1/17"
+
+    - name: "Schlafzimmer Shutter"
+      move_long_address: "0/1/28"
+      move_short_address: "0/1/29"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Atelier Shutter"
+      move_long_address: "0/2/24"
+      move_short_address: "0/1/25"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Media Shutter"
+      move_long_address: "0/2/20"
+      move_short_address: "0/1/21"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Paul Shutter"
+      move_long_address: "0/2/16"
+      move_short_address: "0/1/17"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Ben Main Shutter"
+      move_long_address: "0/2/4"
+      move_short_address: "0/1/5"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Ben Door Shutter"
+      move_long_address: "0/2/0"
+      move_short_address: "0/1/1"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Flur rechts Shutter"
+      move_long_address: "0/2/8"
+      move_short_address: "0/1/9"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+    - name: "Flur Tür Links Shutter"
+      move_long_address: "0/2/12"
+      move_short_address: "0/1/13"
+      stop_address: "0/2/14"
+      travelling_time_down: 30
+      travelling_time_up: 30
+
+# IFTTT
+ifttt:
+  key: !secret ifttt_key
+
+# Binary sensor
+binary_sensor:
+  - platform: random
+    name: runwater-random
+
+# Template sensors
+
+# Template sensors
+
+# Storage for Bubble Card Modules
+template:
+  - trigger:
+      - trigger: event
+        event_type: bubble_card_update_modules
+    sensor:
+      - name: "Bubble Card Modules"
+        state: "saved"
+        icon: "mdi:puzzle"
+        attributes:
+          modules: "{{ trigger.event.data.modules }}"
+          last_updated: "{{ trigger.event.data.last_updated }}"
+                  
+
+  - sensor:
+      # Tibber current price now
+      - name: "Tibber Price Now"
+        state: >
+          {% set now = now().isoformat() %}
+          {% set prices = state_attr('sensor.tibber_daily_prices', 'today') %}
+          {% if prices is iterable %}
+            {% for p in prices %}
+              {% if p.startsAt <= now <= (p.startsAt | as_datetime + timedelta(hours=1)) %}
+                {{ p.total }}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            unavailable
+          {% endif %}
+        unit_of_measurement: "ct/kWh"
+
+      # Zählerstand (fallback to legacy if needed)
+      - name: "Zählerstand"
+        unit_of_measurement: kWh
+        state_class: total_increasing
+        device_class: energy
+        state: >
+          {% set val = states('sensor.energyesp32_mt681_zahlerstand_total') %}
+          {% if val == 'unavailable' or val | float(0) < 1 %}
+            {{ states('sensor.zahlerstand') }}
+          {% else %}
+            {{ val }}
+          {% endif %}
+
+      # Einspeisung (same logic)
+      - name: "Einspeisung"
+        unit_of_measurement: kWh
+        state_class: total_increasing
+        device_class: energy
+        state: >
+          {% set val = states('sensor.energyesp32_mt681_einspeisung') %}
+          {% if val == 'unavailable' or val | float(0) < 1 %}
+            {{ states('sensor.einspeisung') }}
+          {% else %}
+            {{ val }}
+          {% endif %}
+
+      # Battery Power Charging (invert sign)
+      - name: "Battery Power Charging"
+        unit_of_measurement: kW
+        device_class: power
+        state: "{{ max(0, 0 - states('sensor.solarnet_power_battery') | float(default=0)) }}"
+
+      # Battery Power Discharging
+      - name: "Battery Power Discharging"
+        unit_of_measurement: kW
+        device_class: power
+        state: "{{ max(0, states('sensor.solarnet_power_battery') | float(default=0)) }}"
+
+      # Power from Photovoltaics
+      - name: "Power Photovoltaics"
+        unit_of_measurement: kW
+        device_class: power
+        state: "{{ states('sensor.solarnet_power_photovoltaics') | float(default=0) }}"
+
+  # Trigger-based template: rain last hour
+  - trigger:
+      platform: time_pattern
+      minutes: "0"
+    sensor:
+      - name: "Rain last hour"
+        state: "{{ states('sensor.gw2000a_hourly_rain_rate_piezo') }}"
+        unit_of_measurement: "mm"
+        attributes:
+          updated_at: "{{ now() }}"
+# Camera Platform
+# camera:
+#   # - platform: xiaomi_cloud_map_extractor
+#   #   host: <VACUUM_IP>
+#   #   token: <VACUUM_TOKEN>
+#   #   username: <ROBOROCK_ACCOUNT_EMAIL>
+#   #   password: <ROBOROCK_ACCOUNT_PASSWORD>
+#   #   draw: ["all"]
+#   #   attributes:
+#   #     - calibration_point
+#   - platform: local_file
+#     name: PostboxImg
+#     file_path: /config/www/snapshots/postbox.jpg
+#     scan_interval: 10 # Refresh every 10 seconds
+
+# Dashboard Erweiterung
+
+# lovelace:
+#   mode: "yaml"
+#   resources:
+#     - url: "/hacsfiles/button-card/button-card.js"
+#       type: "module"
+#     - url: "/hacsfiles/my-cards/my-cards.js"
+#       type: "module"
+#     - url: "/hacsfiles/lovelace-card-mod/card-mod.js"
+#       type: module
+#     - url: "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js"
+#       type: module
+#     - url: "https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900"
+#       type: css
+#   dashboards:
+#     hacasa-dashboard:
+#       mode: "yaml"
+#       title: HaCasa
+#       icon: mdi:home
+#       show_in_sidebar: true
+#       filename: "dashboard/HaCasa/main.yaml"
+
+# Modbus Integration Fronius inverter
+
+# modbus:
+#   - name: fronius
+#     type: tcp
+#     host: 192.168.1.240 # your inverter IP
+#     port: 502
+#     sensors:
+#       # - name: Battery SoC
+#       #   unit_of_measurement: "%"
+#       #   slave: 200 # > hier muss die Slave Nummer mit der Einstellungd es WR übereinstimmen (Zähler/)
+#       #   address: 36867
+#       #   input_type: holding
+#       #   data_type: uint32
+
+#       # - name: Battery Discharge Power
+#       #   unit_of_measurement: "W"
+#       #   slave: 200
+#       #   address: 37083
+#       #   input_type: holding
+#       #   data_type: int32
+
+#       # - name: PV Total Power
+#       #   unit_of_measurement: "W"
+#       #   slave: 200
+#       #   address: 30775
+#       #   input_type: holding
+#       #   data_type: uint32
+
+#       # - name: Grid Power
+#       #   unit_of_measurement: "W"
+#       #   slave: 200
+#       #   address: 30771
+#       #   input_type: holding
+#       #   data_type: int32
+
+#       # - name: House Load
+#       #   unit_of_measurement: "W"
+#       #   slave: 200
+#       #   address: 30865
+#       #   input_type: holding
+#       #   data_type: int32
+#       - name: AC Power Total
+#         unit_of_measurement: "W"
+#         slave: 200
+#         address: 40083 # Model 103, AC Power register
+#         input_type: holding
+#         data_type: int16
+
+#       - name: Grid Frequency
+#         unit_of_measurement: "Hz"
+#         slave: 200
+#         address: 40070 # Model 103, Frequency
+#         input_type: holding
+#         data_type: uint16
+#         scale: 0.01
+
+#       - name: PV Voltage
+#         unit_of_measurement: "V"
+#         slave: 200
+#         address: 40003 # Model 101, DC Voltage
+#         input_type: holding
+#         data_type: uint16
+#         scale: 0.1
+
+#       - name: PV Current
+#         unit_of_measurement: "A"
+#         slave: 200
+#         address: 40002 # Model 101, DC Current
+#         input_type: holding
+#         data_type: uint16
+#         scale: 0.1
+
+#       - name: Battery SoC
+#         unit_of_measurement: "%"
+#         slave: 1
+#         address: 36867 # Model 124, SoC
+#         input_type: holding
+#         data_type: uint16
+
+#       - name: Battery Charge Power
+#         unit_of_measurement: "W"
+#         slave: 200
+#         address: 40189 # Model 124, Charge Power
+#         input_type: holding
+#         data_type: int16
+
+#       - name: Battery Discharge Power
+#         unit_of_measurement: "W"
+#         slave: 200
+#         address: 40190 # Model 124, Discharge Power
+#         input_type: holding
