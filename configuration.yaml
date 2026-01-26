@@ -34,10 +34,66 @@ influxdb:
   organization: Gorkel
   bucket: home_assistant
 
+
+  # Tags für bessere Organisation in InfluxDB
+  tags:
+    source: hass
+    location: gorkel_home
+  tags_attributes:
+    - friendly_name
+  default_measurement: units
+  override_measurement: entity_id  
+  exclude:
+    entity_globs:
+      - sensor.*_linkquality
+      - sensor.*_rssi
+      - sensor.*_update*
+      - binary_sensor.*_update
+    domains:
+      - automation
+      - script
+      - scene
+      - group
+      - persistent_notification
+
+  
+
+
+  # Maximale Batch-Größe
+  max_retries: 3
+
+
+
+
+
 # Recorder config
 recorder:
-  purge_keep_days: 30
+  purge_keep_days: 14
+  commit_interval: 30
+  db_url: sqlite:////config/home-assistant_v2.db
+  auto_purge: true
+  auto_repack: true
 
+  exclude:
+    domains:
+      - automation
+      - updater
+      - script
+      - scene
+      - group
+      - persistent_notification
+      - sun
+    entity_globs:
+      - sensor.*_linkquality
+      - sensor.*_rssi
+      - sensor.*_update*
+      - binary_sensor.*_update
+      - sensor.unifi_gateway_*
+      - sensor.tibber_price_raw  # Große Attribute
+    entities:
+      - sensor.date
+      - sensor.time
+      - sensor.bubble_card_modules  # Große Attributes
 # Storage for Bubble Card Modules
 template:
   - trigger:

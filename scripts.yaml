@@ -773,3 +773,26 @@ guten_morgen:
       device_id: 1114dade8e13e06556e37d1f1db30b1c
   alias: Guten Morgen
   description: ''
+sauna_mit_musik_starten:
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.schlafzimmer_sauna
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media:
+        media_content_type: APPLE_MUSIC
+        media_content_id: Wellness
+    enabled: true
+    target:
+      entity_id: media_player.schlafzimmer_echo
+  alias: Sauna mit Musik starten
+  description: ''
