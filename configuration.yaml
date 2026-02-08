@@ -34,118 +34,32 @@ influxdb:
   organization: Gorkel
   bucket: home_assistant
 
-
-  # Tags für bessere Organisation in InfluxDB
-  tags:
-    source: hass
-    location: gorkel_home
-  tags_attributes:
-    - friendly_name
-  default_measurement: units
-  override_measurement: entity_id  
-  exclude:
-    entity_globs:
-      - sensor.*_linkquality
-      - sensor.*_rssi
-      - sensor.*_update*
-      - binary_sensor.*_update
-    domains:
-      - automation
-      - script
-      - scene
-      - group
-      - persistent_notification
-
-  
-
-
-  # Maximale Batch-Größe
-  max_retries: 3
-
-
-
-
-
 # Recorder config
 recorder:
-  purge_keep_days: 14
-  commit_interval: 30
-  db_url: sqlite:////config/home-assistant_v2.db
-  auto_purge: true
-  auto_repack: true
+  purge_keep_days: 30
 
-  exclude:
-    domains:
-      - automation
-      - updater
-      - script
-      - scene
-      - group
-      - persistent_notification
-      - sun
-    entity_globs:
-      - sensor.*_linkquality
-      - sensor.*_rssi
-      - sensor.*_update*
-      - binary_sensor.*_update
-      - sensor.unifi_gateway_*
-      - sensor.tibber_price_raw  # Große Attribute
-    entities:
-      - sensor.date
-      - sensor.time
-      - sensor.bubble_card_modules  # Große Attributes
-# Storage for Bubble Card Modules
-template:
-  - trigger:
-      - trigger: event
-        event_type: bubble_card_update_modules
-    sensor:
-      - name: "Bubble Card Modules"
-        state: "saved"
-        icon: "mdi:puzzle"
-        attributes:
-          modules: "{{ trigger.event.data.modules }}"
-          last_updated: "{{ trigger.event.data.last_updated }}"
 
- # Tibber Preise         
 
-  - sensor:
-      - name: "tibber_prices_15m"
-        unique_id: tibber_prices_15m
-        icon: mdi:flash
-        unit_of_measurement: "€/kWh"
-        state: >
-          {{ now() }}   # Dummy state (Apex nutzt nur die attributes)
-        attributes:
-          datetimes: >
-            {% set today = state_attr('sensor.tibber_price_raw','today') %}
-            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
-            {% set all = today + tomorrow %}
-            {{ all | map(attribute='startsAt') | list }}
-          prices: >
-            {% set today = state_attr('sensor.tibber_price_raw','today') %}
-            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
-            {% set all = today + tomorrow %}
-            {{ all | map(attribute='total') | list }}        
+
                   
   # Proxmox Integration
 
-proxmoxve:
-  - host: 192.168.1.8
-    username: !secret proxmox_user
-    password: !secret proxmox_pw
-    verify_ssl: false
-    realm: pve
-    nodes:
-      - node: pve
-        containers:
-          - 100
-          - 102
-          - 103
-          - 104
-          - 105
-        vms:
-          - 101
+# proxmoxve:
+#   - host: 192.168.1.8
+#     username: !secret proxmox_user
+#     password: !secret proxmox_pw
+#     verify_ssl: false
+#     realm: pve
+#     nodes:
+#       - node: pve
+#         containers:
+#           - 100
+#           - 102
+#           - 103
+#           - 104
+#           - 105
+#         vms:
+#           - 101
 
 # Text to speech
 tts:
@@ -297,106 +211,6 @@ sensor:
     scan_interval: 900 # Update every 15m
 
 
-# Template sensors - Neue Syntax (empfohlen)
-template:
-  - sensor:
-      # Electricity Max Price
-      - name: "Electricity Max price Gorkel"
-        unique_id: sensor.electricity_max_price_gorkel
-        state: "{{ state_attr('sensor.gorkel_electricity_price','max_price') }}"
-        unit_of_measurement: EUR/kWh
-        icon: mdi:currency-eur
-
-      # Electricity Min Price
-      - name: "Electricity Min price Gorkel"
-        unique_id: sensor.electricity_min_price_gorkel
-        state: "{{ state_attr('sensor.gorkel_electricity_price','min_price') }}"
-        unit_of_measurement: EUR/kWh
-        icon: mdi:currency-eur
-
-      # Electricity Avg Price
-      - name: "Electricity Avg price Gorkel"
-        unique_id: sensor.electricity_avg_price_gorkel
-        state: "{{ state_attr('sensor.gorkel_electricity_price','avg_price') }}"
-        unit_of_measurement: EUR/kWh
-        icon: mdi:currency-eur
-
-      # UNIFI Gateway CPU
-      - name: "CPU"
-        unique_id: sensor.unifi_gateway_cpu
-        state: "{{ states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['cpu'] }}"
-        icon: mdi:cpu-64-bit
-
-      # UNIFI Wired Clients
-      - name: "UDM-Pro Wired Clients"
-        unique_id: sensor.unifi_gateway_wired_clients
-        state: "{{ states.sensor.unifi_gateway_lan.attributes.num_user }}"
-        icon: mdi:lan
-
-      # UNIFI Wireless Clients
-      - name: "UDM-Pro Wireless Clients"
-        unique_id: sensor.unifi_gateway_wireless_clients
-        state: "{{ states.sensor.unifi_gateway_wlan.attributes.num_user }}"
-        icon: mdi:wifi
-
-      # UNIFI Download Speed
-      - name: "UDM-Pro Download"
-        unique_id: sensor.unifi_gateway_www_xput_down
-        state: "{{ states.sensor.unifi_gateway_www.attributes.xput_down }}"
-        unit_of_measurement: Mbps
-        icon: mdi:download
-
-      # UNIFI Speedtest Ping
-      - name: "UDM-Pro Ping"
-        unique_id: sensor.unifi_gateway_www_speedtest_ping
-        state: "{{ states.sensor.unifi_gateway_www.attributes.speedtest_ping }}"
-        unit_of_measurement: ms
-        icon: mdi:run-fast
-
-      # UNIFI Uptime
-      - name: "UDM-Pro Uptime"
-        unique_id: sensor.unifi_uptime_templated
-        state: >-
-          {% set time = (states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['uptime'] | int) | int %}
-          {% set minutes = ((time % 3600) / 60) | int %}
-          {% set hours = ((time % 86400) / 3600) | int %}
-          {% set days = (time / 86400) | int %}
-
-          {%- if time < 60 -%}
-            Less than a minute
-          {%- else -%}
-            {%- if days > 0 -%}
-              {{ days }}d
-            {%- endif -%}
-            {%- if hours > 0 -%}
-              {%- if days > 0 -%}
-                {{ ' ' }}
-              {%- endif -%}
-              {{ hours }}h
-            {%- endif -%}
-            {%- if minutes > 0 -%}
-              {%- if days > 0 or hours > 0 -%}
-                {{ ' ' }}
-              {%- endif -%}
-              {{ minutes }}m
-            {%- endif -%}
-          {%- endif -%}
-        icon: mdi:av-timer
-
-      # EPEX Spot Price ct/kWh
-      - name: "Aktueller Strompreis"
-        unique_id: sensor.epex_spot_price_ct_per_kwh
-        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.1) + 1.5) * 1.2 }}"
-        unit_of_measurement: "ct/kWh"
-        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
-
-      # EPEX Spot Price EUR/kWh
-      - name: "Aktueller Strompreis Euro"
-        unique_id: sensor.epex_spot_price_eur_per_kwh
-        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.001) + 0.015) * 1.2 }}"
-        unit_of_measurement: "eur/kWh"
-        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
-
 
 # Utility meter
 
@@ -527,8 +341,9 @@ binary_sensor:
 # Template sensors
 
 # Template sensors
+# Template sensors - Neue Syntax (empfohlen)
 
-# Storage for Bubble Card Modules
+
 template:
   - trigger:
       - trigger: event
@@ -540,6 +355,138 @@ template:
         attributes:
           modules: "{{ trigger.event.data.modules }}"
           last_updated: "{{ trigger.event.data.last_updated }}"
+
+# Storage for Bubble Card Modules
+
+  - trigger:
+      - trigger: event
+        event_type: bubble_card_update_modules
+    sensor:
+      - name: "Bubble Card Modules"
+        state: "saved"
+        icon: "mdi:puzzle"
+        attributes:
+          modules: "{{ trigger.event.data.modules }}"
+          last_updated: "{{ trigger.event.data.last_updated }}"
+ 
+ # Tibber Preise         
+
+  - sensor:
+      - name: "tibber_prices_15m"
+        unique_id: tibber_prices_15m
+        icon: mdi:flash
+        unit_of_measurement: "€/kWh"
+        state: >
+          {{ now() }}   # Dummy state (Apex nutzt nur die attributes)
+        attributes:
+          datetimes: >
+            {% set today = state_attr('sensor.tibber_price_raw','today') %}
+            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
+            {% set all = today + tomorrow %}
+            {{ all | map(attribute='startsAt') | list }}
+          prices: >
+            {% set today = state_attr('sensor.tibber_price_raw','today') %}
+            {% set tomorrow = state_attr('sensor.tibber_price_raw','tomorrow') %}
+            {% set all = today + tomorrow %}
+            {{ all | map(attribute='total') | list }}        
+# Electricity Max Price
+  - sensor:
+      - name: "Electricity Max price Gorkel"
+        unique_id: sensor.electricity_max_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','max_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # Electricity Min Price
+      - name: "Electricity Min price Gorkel"
+        unique_id: sensor.electricity_min_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','min_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # Electricity Avg Price
+      - name: "Electricity Avg price Gorkel"
+        unique_id: sensor.electricity_avg_price_gorkel
+        state: "{{ state_attr('sensor.gorkel_electricity_price','avg_price') }}"
+        unit_of_measurement: EUR/kWh
+        icon: mdi:currency-eur
+
+      # UNIFI Gateway CPU
+      - name: "CPU"
+        unique_id: sensor.unifi_gateway_cpu
+        state: "{{ states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['cpu'] }}"
+        icon: mdi:cpu-64-bit
+
+      # UNIFI Wired Clients
+      - name: "UDM-Pro Wired Clients"
+        unique_id: sensor.unifi_gateway_wired_clients
+        state: "{{ states.sensor.unifi_gateway_lan.attributes.num_user }}"
+        icon: mdi:lan
+
+      # UNIFI Wireless Clients
+      - name: "UDM-Pro Wireless Clients"
+        unique_id: sensor.unifi_gateway_wireless_clients
+        state: "{{ states.sensor.unifi_gateway_wlan.attributes.num_user }}"
+        icon: mdi:wifi
+
+      # UNIFI Download Speed
+      - name: "UDM-Pro Download"
+        unique_id: sensor.unifi_gateway_www_xput_down
+        state: "{{ states.sensor.unifi_gateway_www.attributes.xput_down }}"
+        unit_of_measurement: Mbps
+        icon: mdi:download
+
+      # UNIFI Speedtest Ping
+      - name: "UDM-Pro Ping"
+        unique_id: sensor.unifi_gateway_www_speedtest_ping
+        state: "{{ states.sensor.unifi_gateway_www.attributes.speedtest_ping }}"
+        unit_of_measurement: ms
+        icon: mdi:run-fast
+
+      # UNIFI Uptime
+      - name: "UDM-Pro Uptime"
+        unique_id: sensor.unifi_uptime_templated
+        state: >-
+          {% set time = (states.sensor.unifi_gateway_wan.attributes['gw_system-stats']['uptime'] | int) | int %}
+          {% set minutes = ((time % 3600) / 60) | int %}
+          {% set hours = ((time % 86400) / 3600) | int %}
+          {% set days = (time / 86400) | int %}
+
+          {%- if time < 60 -%}
+            Less than a minute
+          {%- else -%}
+            {%- if days > 0 -%}
+              {{ days }}d
+            {%- endif -%}
+            {%- if hours > 0 -%}
+              {%- if days > 0 -%}
+                {{ ' ' }}
+              {%- endif -%}
+              {{ hours }}h
+            {%- endif -%}
+            {%- if minutes > 0 -%}
+              {%- if days > 0 or hours > 0 -%}
+                {{ ' ' }}
+              {%- endif -%}
+              {{ minutes }}m
+            {%- endif -%}
+          {%- endif -%}
+        icon: mdi:av-timer
+
+      # EPEX Spot Price ct/kWh
+      - name: "Aktueller Strompreis"
+        unique_id: sensor.epex_spot_price_ct_per_kwh
+        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.1) + 1.5) * 1.2 }}"
+        unit_of_measurement: "ct/kWh"
+        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
+
+      # EPEX Spot Price EUR/kWh
+      - name: "Aktueller Strompreis Euro"
+        unique_id: sensor.epex_spot_price_eur_per_kwh
+        state: "{{ ((states('sensor.epex_spot_data_net_price') | float(0) * 0.001) + 0.015) * 1.2 }}"
+        unit_of_measurement: "eur/kWh"
+        availability: "{{ states('sensor.epex_spot_data_net_price') not in ['unavailable', 'unknown'] }}"
+
                   
 
   - sensor:
@@ -630,6 +577,7 @@ template:
 
 # Dashboard Erweiterung
 
+
 # lovelace:
 #   mode: "yaml"
 #   resources:
@@ -652,25 +600,6 @@ template:
 #       filename: "dashboard/HaCasa/main.yaml"
 
 # Modbus Integration Fronius inverter
-modbus:
-  - type: tcp
-# Hier dann die IP ändern
-    host: 192.168.1.240
-    port: 502
-    name: gen24
-    sensors:
-      - name: reading_battery_settings
-        slave: 1
-        count: 24
-        address: 40345
-        scan_interval: 5
-        data_type: custom
-        structure: ">10H2h4H8h"    
-
-
-
-
-
 
 # modbus:
 #   - name: fronius
