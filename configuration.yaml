@@ -652,6 +652,25 @@ template:
 #       filename: "dashboard/HaCasa/main.yaml"
 
 # Modbus Integration Fronius inverter
+modbus:
+  - type: tcp
+# Hier dann die IP ändern
+    host: 192.168.1.240
+    port: 502
+    name: gen24
+    sensors:
+      - name: reading_battery_settings
+        slave: 1
+        count: 24
+        address: 40345
+        scan_interval: 5
+        data_type: custom
+        structure: ">10H2h4H8h"    
+
+
+
+
+
 
 # modbus:
 #   - name: fronius

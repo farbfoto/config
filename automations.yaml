@@ -1621,24 +1621,31 @@
   alias: Wohnzimmer:Frame TV bei fehlender Belegung um 23:00 ausschalten
   description: ''
   triggers:
-  - at: '23:30:00'
-    trigger: time
-  - at: 01:00:00
-    trigger: time
-  conditions:
-  - type: is_not_occupied
-    condition: device
-    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
-    entity_id: 85b429dbd20888fd53e0d42845684da5
-    domain: binary_sensor
+  - trigger: state
+    entity_id:
+    - binary_sensor.wohnzimmer_anwesenheitssensor_aqara_fp2_homekit_presence_sensor_1
+    to:
+    - 'off'
     for:
       hours: 0
-      minutes: 0
-      seconds: 5
+      minutes: 10
+      seconds: 0
+  conditions:
+  - condition: time
+    after: '23:00:00'
+    before: 06:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
   actions:
   - type: turn_off
     device_id: 1c6ced35933e2f30c4bc5044eed49ff7
-    entity_id: f443be0a0ae51a4416d5ef85d3259b63
+    entity_id: 116a573f88260d82dee4350c7e24b8d7
     domain: remote
   mode: single
 - id: '1708171491643'
@@ -1807,11 +1814,12 @@
       seconds: 0
   conditions: []
   actions:
-  - metadata: {}
+  - action: light.turn_off
+    metadata: {}
     target:
-      entity_id: scene.wohnzimmer_aus
-    action: scene.turn_on
-    data: {}
+      entity_id: light.wohnzimmer_licht
+    data:
+      transition: 10
   mode: single
 - id: '1710686803513'
   alias: 'Wohnzimmer: Licht an bei Bewegung '
@@ -1826,12 +1834,10 @@
   - condition: time
     after: 06:00:00
     before: '23:00:00'
-  - type: is_illuminance
-    condition: device
-    device_id: f91c054eaf0efce7e83b8c7aa8dd064e
-    entity_id: e75382eb8996e960465ae5fa7ceddcf9
-    domain: sensor
-    below: 200
+  - condition: state
+    entity_id: light.wohnzimmer_licht
+    state:
+    - 'off'
   actions:
   - metadata: {}
     data: {}
@@ -3768,4 +3774,26 @@
       entity_id: automation.heizung_profilwechsel
     data:
       skip_condition: true
+  mode: single
+- id: '1770539374265'
+  alias: Homeoffice Reset Shades
+  description: ''
+  triggers:
+  - trigger: time
+    at: 06:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - action: cover.open_cover
+    metadata: {}
+    target:
+      area_id: homeoffice
+    data: {}
   mode: single
